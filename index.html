@@ -1,0 +1,2873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>SENTIPENSAR · El Banco de Saberes Vivos</title>
+<script>
+(function(){
+  try{
+    var t = localStorage.getItem('SENTIPENSAR_THEME');
+    if(t === 'dark') document.documentElement.setAttribute('data-theme','dark');
+  }catch(e){}
+})();
+</script>
+<style>
+:root{
+  --bg:#f6f3ec;--bg-2:#efe9dd;--panel:#ffffff;--ink:#1e2a32;--muted:#5f6f7c;
+  --brand:#0f4c5c;--brand-2:#1b7a8c;--brand-3:#2fa3a3;--gold:#c9a227;
+  --gold-soft:#f4ecd2;--gold-ink:#6b5510;--line:#e4ddd0;--input-bg:#fdfcf9;
+  --input-bg-focus:#ffffff;--soft-card-a:#fbfaf6;--soft-card-b:#f2f7f7;
+  --ok:#2e7d5b;--warn:#b45309;--err:#b03a3a;--radius:16px;--radius-s:10px;
+  --shadow:0 8px 28px rgba(15,76,92,.09);--shadow-s:0 2px 10px rgba(15,76,92,.07);
+  --topbar-bg:rgba(255,255,255,.9);
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0d1114;--bg-2:#161d22;--panel:#1a2329;--ink:#e8eef1;--muted:#8fa0ab;
+  --brand:#2fa3a3;--brand-2:#4fc3c3;--brand-3:#6dd5d5;--gold:#e0b944;
+  --gold-soft:#3a2f05;--gold-ink:#f4d97a;--line:#2a3740;--input-bg:#151c21;
+  --input-bg-focus:#1a2329;--soft-card-a:#161d22;--soft-card-b:#1e2a32;
+  --ok:#4caf82;--warn:#e0a83c;--err:#e05555;
+  --shadow:0 8px 28px rgba(0,0,0,.45);--shadow-s:0 2px 10px rgba(0,0,0,.35);
+  --topbar-bg:rgba(15,21,25,.88);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans);
+  background:radial-gradient(circle at 12% 0%, #ffffff 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, #eef4f4 0%, transparent 40%), var(--bg);
+  color:var(--ink);font-size:15.5px;line-height:1.6;min-height:100vh;
+  transition:background .25s ease, color .25s ease;
+}
+[data-theme="dark"] body{
+  background:radial-gradient(circle at 12% 0%, rgba(47,163,163,.08) 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(224,185,68,.05) 0%, transparent 40%), var(--bg);
+}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.25;margin:0 0 .4em}
+h1{font-size:1.9rem}h2{font-size:1.5rem}h3{font-size:1.15rem;color:var(--brand)}
+h4{font-size:1rem;color:var(--brand-2)}p{margin:0 0 .8em}
+a{color:var(--brand-2);text-decoration:none}a:hover{text-decoration:underline}
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--sans);
+  font-size:.9rem;font-weight:600;padding:.62rem 1.15rem;border-radius:999px;
+  border:1px solid transparent;cursor:pointer;transition:.18s ease;
+  background:var(--bg-2);color:var(--ink);}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:var(--shadow-s)}
+.btn.gold{background:linear-gradient(135deg,#d9b23f,var(--gold));color:#3a2f05}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--brand)}
+.btn.danger{background:linear-gradient(135deg,#c94a3a,#a83629);color:#fff}
+.btn.small{padding:.35rem .8rem;font-size:.8rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:1rem;
+  flex-wrap:wrap;padding:.75rem 1.4rem;background:var(--topbar-bg);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);transition:background .25s ease;}
+.topbar .logo{width:42px;height:42px;border-radius:13px;flex:none;
+  background:linear-gradient(135deg,var(--brand),var(--brand-3));display:grid;place-items:center;
+  color:#fff;font-family:var(--serif);font-size:1.3rem;box-shadow:var(--shadow-s);position:relative;}
+.topbar .logo::after{content:"";position:absolute;inset:3px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.35);}
+.topbar .titles{flex:1;min-width:200px}
+.topbar .titles strong{font-family:var(--serif);font-size:1.15rem;display:block;
+  color:var(--brand);letter-spacing:.01em;}
+.topbar .titles span{font-size:.76rem;color:var(--muted)}
+.user-chip{display:flex;align-items:center;gap:.6rem;font-size:.82rem;
+  background:var(--gold-soft);border:1px solid #e8dcb4;border-radius:999px;
+  padding:.3rem .85rem;color:var(--gold-ink);}
+[data-theme="dark"] .user-chip{border-color:#5a4a10}
+.user-chip .rol{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;
+  background:var(--brand);color:#fff;padding:.15rem .5rem;border-radius:999px;font-weight:700;}
+[data-theme="dark"] .user-chip .rol{color:#0d1114}
+.user-chip .rol.presidente{background:linear-gradient(135deg,#d9b23f,var(--gold));color:#3a2f05}
+.user-chip .rol.gerente{background:linear-gradient(135deg,#2fa3a3,#1b7a8c);color:#fff}
+.theme-toggle{width:40px;height:40px;border-radius:50%;flex:none;background:var(--bg-2);
+  border:1px solid var(--line);cursor:pointer;display:grid;place-items:center;
+  font-size:1.05rem;transition:.18s ease;color:var(--ink);padding:0;}
+.theme-toggle:hover{transform:scale(1.06);border-color:var(--brand-3)}
+.theme-toggle .icon-sun{display:none}.theme-toggle .icon-moon{display:block}
+[data-theme="dark"] .theme-toggle .icon-sun{display:block}
+[data-theme="dark"] .theme-toggle .icon-moon{display:none}
+[data-theme="dark"] .theme-toggle{background:#1a2329}
+.apertura{max-width:920px;margin:0 auto;padding:3rem 1.4rem 5rem;}
+.hero-card{background:var(--panel);border:1px solid var(--line);border-radius:24px;
+  padding:2.4rem;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  transition:background .25s ease, border-color .25s ease;}
+.hero-card::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;
+  background:linear-gradient(90deg,var(--brand),var(--brand-3),var(--gold));}
+.hero-card .eyebrow{display:inline-block;font-size:.72rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--brand-2);font-weight:700;margin-bottom:.6rem;}
+.hero-brand{text-align:center;margin:0 0 1.4rem;}
+.hero-brand .brand-name{font-family:var(--serif);font-size:2.6rem;letter-spacing:.04em;
+  color:var(--brand);margin:0;line-height:1;}
+.hero-brand .brand-sub{font-family:var(--serif);font-style:italic;font-size:1rem;
+  color:var(--brand-2);margin:.3rem 0 .4rem;}
+.hero-brand .brand-lema{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;}
+.metafora-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:.9rem;margin:1.4rem 0;}
+.mini-card{background:linear-gradient(160deg,var(--soft-card-a),var(--soft-card-b));
+  border:1px solid var(--line);border-radius:var(--radius-s);padding:1rem;
+  transition:background .25s ease, border-color .25s ease;}
+.mini-card h4{margin-bottom:.25rem;font-size:.92rem}
+.mini-card p{font-size:.82rem;color:var(--muted);margin:0}
+.sala-espera{max-width:720px;margin:0 auto;padding:3rem 1.4rem 5rem;}
+.sala-espera .hero-card{text-align:center}
+.estado-pill{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;padding:.4rem 1rem;border-radius:999px;margin-bottom:1rem;}
+.estado-pill.pendiente{background:#fef3c7;color:#78350f}
+.estado-pill.solicitada{background:#fde68a;color:#78350f}
+.estado-pill.autorizada{background:#d1fae5;color:#065f46}
+.estado-pill.revocada{background:#fee2e2;color:#991b1b}
+[data-theme="dark"] .estado-pill.pendiente{background:#3a2f05;color:#f4d97a}
+[data-theme="dark"] .estado-pill.solicitada{background:#3a2f05;color:#f4d97a}
+[data-theme="dark"] .estado-pill.autorizada{background:#052e1f;color:#6dd5a8}
+[data-theme="dark"] .estado-pill.revocada{background:#3a0f0f;color:#f4a3a3}
+.shell{display:grid;grid-template-columns:300px 1fr;gap:1.4rem;max-width:1440px;
+  margin:0 auto;padding:1.4rem;}
+.side{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 100px);
+  overflow-y:auto;padding-right:.3rem;}
+.side::-webkit-scrollbar{width:6px}
+.side::-webkit-scrollbar-thumb{background:#d8d0c1;border-radius:9px}
+[data-theme="dark"] .side::-webkit-scrollbar-thumb{background:#2a3740}
+.saldos-box{background:linear-gradient(150deg,var(--brand),#0c3b47);
+  border-radius:var(--radius);padding:1.1rem;color:#eaf5f6;margin-bottom:1rem;
+  box-shadow:var(--shadow);}
+[data-theme="dark"] .saldos-box{background:linear-gradient(150deg,#0f4c5c,#0a2a32);}
+.saldos-box h4{color:#fff;margin:0 0 .1rem;font-size:.95rem}
+.saldos-box .sub{font-size:.72rem;opacity:.75;margin-bottom:.9rem;display:block}
+.saldo-line{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:.8rem;padding:.28rem 0;border-bottom:1px dashed rgba(255,255,255,.16);}
+.saldo-line:last-child{border-bottom:none}
+.saldo-line b{font-family:var(--serif);font-size:1.05rem;color:var(--gold)}
+.barra{height:6px;border-radius:9px;background:rgba(255,255,255,.18);
+  overflow:hidden;margin-top:.7rem;}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--brand-3),var(--gold));
+  width:0%;transition:width .6s ease;}
+.nav{list-style:none;margin:0;padding:0}
+.nav li{margin-bottom:.22rem}
+.nav button{width:100%;text-align:left;background:transparent;border:1px solid transparent;
+  border-radius:var(--radius-s);padding:.56rem .7rem;cursor:pointer;font-size:.855rem;
+  color:var(--muted);font-family:var(--sans);display:flex;gap:.55rem;align-items:flex-start;
+  transition:.15s;line-height:1.35;}
+.nav button:hover{background:var(--panel);color:var(--brand)}
+.nav button.active{background:var(--panel);color:var(--brand);font-weight:600;
+  border-color:var(--line);box-shadow:var(--shadow-s);}
+.nav button .num{flex:none;width:22px;height:22px;border-radius:7px;background:var(--bg-2);
+  display:grid;place-items:center;font-size:.68rem;font-weight:700;color:var(--brand);}
+.nav button.active .num{background:linear-gradient(135deg,var(--brand),var(--brand-3));color:#fff}
+[data-theme="dark"] .nav button.active .num{color:#0d1114}
+.nav .divider{height:1px;background:var(--line);margin:.7rem .3rem}
+.nav .section-label{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;padding:.6rem .7rem .2rem;}
+.content{min-width:0}
+.panel{display:none;animation:fade .35s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.panel-head{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.5rem 1.7rem;margin-bottom:1.1rem;box-shadow:var(--shadow-s);position:relative;
+  overflow:hidden;transition:background .25s ease, border-color .25s ease;}
+.panel-head::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(180deg,var(--brand),var(--brand-3));}
+.badge{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--brand-2);background:rgba(47,163,163,.13);
+  border-radius:999px;padding:.2rem .7rem;margin-bottom:.5rem;}
+[data-theme="dark"] .badge{background:rgba(79,195,195,.14)}
+.lead{color:var(--muted);font-size:.92rem;margin:0}
+.frase-guia{font-family:var(--serif);font-style:italic;color:var(--brand);
+  border-left:3px solid var(--gold);padding-left:.9rem;margin:1rem 0;font-size:.95rem;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.4rem 1.6rem;margin-bottom:1.1rem;box-shadow:var(--shadow-s);
+  transition:background .25s ease, border-color .25s ease;}
+.card > h3{margin-top:0;padding-bottom:.5rem;border-bottom:1px solid var(--line)}
+.card .hint{font-size:.8rem;color:var(--muted);margin:.3rem 0 .9rem}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem}
+.field{display:block;margin-bottom:1rem}
+.field > span, .field > .label{display:block;font-size:.82rem;font-weight:600;
+  color:var(--brand);margin-bottom:.35rem;}
+.field .sub{display:block;font-weight:400;font-size:.76rem;color:var(--muted);
+  margin-top:-.15rem;margin-bottom:.35rem;}
+input[type=text],input[type=email],input[type=date],input[type=url],select,textarea{
+  width:100%;font-family:var(--sans);font-size:.9rem;color:var(--ink);
+  padding:.62rem .8rem;border:1px solid var(--line);border-radius:var(--radius-s);
+  background:var(--input-bg);transition:.15s;resize:vertical;}
+textarea{min-height:96px;line-height:1.55}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-3);
+  background:var(--input-bg-focus);box-shadow:0 0 0 3px rgba(47,163,163,.14);}
+input[readonly]{background:var(--bg-2);color:var(--muted)}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
+.opciones{display:grid;gap:.7rem}
+.opcion{border:1px solid var(--line);border-radius:var(--radius-s);padding:.85rem 1rem;
+  background:var(--input-bg);transition:.16s;cursor:pointer;}
+.opcion:hover{border-color:var(--brand-3);background:var(--panel)}
+.opcion.on{border-color:var(--brand-2);background:rgba(47,163,163,.08);
+  box-shadow:0 0 0 3px rgba(47,163,163,.10);}
+.opcion label{display:flex;gap:.7rem;align-items:flex-start;cursor:pointer;
+  font-size:.9rem;font-weight:600;color:var(--brand);}
+.opcion input{margin-top:.25rem;flex:none;accent-color:var(--brand-2);width:16px;height:16px}
+.opcion .desc{font-size:.82rem;color:var(--muted);font-weight:400;
+  margin:.4rem 0 0 1.7rem;display:none;}
+.opcion.abierta .desc{display:block}
+.opcion .toggle{font-size:.74rem;color:var(--brand-2);margin-left:1.7rem;
+  background:none;border:none;cursor:pointer;padding:.15rem 0;
+  text-decoration:underline;font-family:var(--sans);}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:1px solid var(--line);border-radius:999px;padding:.34rem .85rem;
+  font-size:.82rem;background:var(--input-bg);cursor:pointer;transition:.15s;user-select:none;}
+.chip.on{background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;border-color:transparent;}
+[data-theme="dark"] .chip.on{color:#0d1114}
+.rep-item{border:1px solid var(--line);border-radius:var(--radius-s);padding:1rem 1.1rem;
+  background:var(--input-bg);margin-bottom:.8rem;position:relative;
+  transition:background .25s ease, border-color .25s ease;}
+.rep-item .rep-title{font-weight:600;color:var(--brand);font-size:.9rem;margin-bottom:.5rem}
+.rep-item .del{position:absolute;top:.6rem;right:.7rem;background:none;border:none;
+  color:var(--err);cursor:pointer;font-size:.78rem;text-decoration:underline;
+  font-family:var(--sans);}
+.referent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;}
+.referent{background:linear-gradient(160deg,var(--soft-card-a),var(--soft-card-b));
+  border:1px solid var(--line);border-radius:var(--radius-s);padding:1rem 1.1rem;
+  position:relative;transition:.18s;}
+.referent:hover{box-shadow:var(--shadow-s);transform:translateY(-2px)}
+.referent .avatar{width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brand),var(--brand-3));color:#fff;
+  display:grid;place-items:center;font-family:var(--serif);font-size:1rem;
+  font-weight:700;margin-bottom:.6rem;}
+[data-theme="dark"] .referent .avatar{color:#0d1114}
+.referent h4{margin:0 0 .2rem;font-size:.95rem;color:var(--brand)}
+.referent .rol{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--gold);font-weight:700;margin-bottom:.5rem;display:block;}
+.referent .cita{font-family:var(--serif);font-style:italic;font-size:.82rem;
+  color:var(--ink);border-left:2px solid var(--gold);padding-left:.6rem;
+  margin:.5rem 0;line-height:1.45;}
+.referent .aporte{font-size:.78rem;color:var(--muted);margin:.4rem 0 0}
+.panel-actions{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;padding:.9rem 0 2.5rem;}
+.save-status{font-size:.82rem;color:var(--muted)}
+.save-status.ok{color:var(--ok);font-weight:600}
+.save-status.err{color:var(--err);font-weight:600}
+.toast{position:fixed;bottom:1.4rem;left:50%;transform:translate(-50%,140%);
+  background:var(--brand);color:#fff;padding:.75rem 1.4rem;border-radius:999px;
+  font-size:.86rem;box-shadow:var(--shadow);z-index:99;
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.3);max-width:90vw;text-align:center;}
+[data-theme="dark"] .toast{color:#0d1114}
+.toast.show{transform:translate(-50%,0)}
+.toast.err{background:var(--err)}
+.cierre{text-align:center;font-family:var(--serif);font-style:italic;color:var(--brand);
+  font-size:1.05rem;padding:2rem 1rem 3rem;}
+.cierre span{display:block;font-size:.8rem;font-family:var(--sans);font-style:normal;
+  color:var(--muted);margin-top:.6rem;}
+.retiro-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:.8rem;margin-bottom:1.2rem;}
+.retiro-btn{border:1px solid var(--line);border-radius:var(--radius-s);padding:1.1rem;
+  background:linear-gradient(160deg,var(--soft-card-a),var(--soft-card-b));
+  text-align:left;cursor:pointer;transition:.18s;font-family:var(--sans);
+  position:relative;color:var(--ink);}
+.retiro-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-s);border-color:var(--brand-3)}
+.retiro-btn .ico{font-size:1.6rem;display:block;margin-bottom:.4rem}
+.retiro-btn strong{display:block;color:var(--brand);font-size:.95rem;margin-bottom:.2rem}
+.retiro-btn span{font-size:.78rem;color:var(--muted)}
+.retiro-btn.primary{background:linear-gradient(150deg,var(--brand),#0c3b47);color:#fff;border-color:transparent}
+.retiro-btn.primary strong,.retiro-btn.primary span{color:#fff}
+.retiro-btn.primary span{opacity:.75}
+.retiro-btn.gold{background:linear-gradient(150deg,#d9b23f,var(--gold));color:#3a2f05;border-color:transparent}
+.retiro-btn.gold strong,.retiro-btn.gold span{color:#3a2f05}
+.retiro-btn.audio{background:linear-gradient(150deg,#2fa3a3,#1b7a8c);color:#fff;border-color:transparent}
+.retiro-btn.audio strong,.retiro-btn.audio span{color:#fff}
+.retiro-btn.audio span{opacity:.8}
+.retiro-btn.tree{background:linear-gradient(150deg,#5f6f7c,#3f4d57);color:#fff;border-color:transparent}
+.retiro-btn.tree strong,.retiro-btn.tree span{color:#fff}
+.retiro-btn.tree span{opacity:.8}
+.pista-sumula{display:block;margin-top:.55rem;font-size:.7rem;color:#f4d97a;
+  background:rgba(0,0,0,.22);border:1px solid rgba(244,217,122,.35);border-radius:6px;
+  padding:.28rem .6rem;cursor:pointer;text-align:left;font-family:var(--sans);
+  font-weight:600;letter-spacing:.03em;transition:.18s;width:100%;}
+.pista-sumula:hover{background:rgba(0,0,0,.35);border-color:rgba(244,217,122,.6);color:#fff}
+.pista-sumula::before{content:"▸ "}
+.pista-sumula.abierta::before{content:"▾ "}
+.nota-sumula{display:none;margin-top:.55rem;padding:.75rem .9rem;background:rgba(0,0,0,.45);
+  border-left:3px solid #f4d97a;border-radius:0 6px 6px 0;font-size:.74rem;
+  color:#f0f6f7;font-style:italic;line-height:1.55;text-align:left;}
+.nota-sumula.abierta{display:block}
+.nota-sumula b{font-style:normal;font-weight:700;color:#f4d97a}
+.nota-sumula i{color:#cfe8e8}
+.retiro-preview{background:var(--soft-card-a);border:1px dashed var(--line);
+  border-radius:var(--radius-s);padding:1.5rem;font-family:var(--serif);
+  line-height:1.7;color:var(--ink);max-height:640px;overflow-y:auto;}
+.retiro-preview h1{font-size:1.5rem;text-align:center;color:var(--brand);margin-bottom:.3rem}
+.retiro-preview h2{font-size:1.1rem;color:var(--brand);margin:1.4rem 0 .5rem;
+  padding-bottom:.3rem;border-bottom:1px solid var(--line);}
+.retiro-preview h3{font-size:.95rem;color:var(--brand-2);margin:1rem 0 .3rem}
+.retiro-preview .sub{font-family:var(--sans);font-size:.8rem;color:var(--muted);
+  text-align:center;font-style:italic;}
+.retiro-preview .kv{font-family:var(--sans);font-size:.85rem;margin:.3rem 0}
+.retiro-preview .kv b{color:var(--brand)}
+.retiro-preview .bloque{background:var(--panel);border-left:3px solid var(--brand-3);
+  padding:.8rem 1rem;border-radius:0 var(--radius-s) var(--radius-s) 0;
+  margin:.6rem 0;font-family:var(--sans);font-size:.88rem;white-space:pre-wrap;line-height:1.55;}
+.retiro-preview .bloque.vacio{border-left-color:var(--line);color:var(--muted);font-style:italic}
+.retiro-preview pre.tree{font-family:'SF Mono',Consolas,'Courier New',monospace;
+  font-size:.78rem;line-height:1.55;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius-s);padding:1rem;overflow-x:auto;white-space:pre;color:var(--ink);}
+.retiro-preview .firma{margin-top:2rem;text-align:center;font-family:var(--sans);
+  font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;}
+.sello-presidencial{width:140px;height:140px;border:3px double var(--gold);border-radius:50%;
+  position:relative;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;font-family:var(--serif);color:var(--gold);
+  transform:rotate(-8deg);background:radial-gradient(circle, rgba(201,162,39,.08), transparent);
+  margin:1rem auto;padding:8px;}
+.sello-presidencial::before{content:"";position:absolute;inset:6px;border:1px solid var(--gold);
+  border-radius:50%;opacity:.55;pointer-events:none;}
+.sello-presidencial .sello-sup{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:700;line-height:1.1;}
+.sello-presidencial .sello-mid{font-size:.82rem;font-weight:700;line-height:1.1;margin:.2rem 0}
+.sello-presidencial .sello-nom{font-size:.58rem;font-style:italic;color:var(--brand);
+  line-height:1.1;max-width:110px;}
+.sello-presidencial .sello-fec{font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;
+  opacity:.75;margin-top:.15rem;}
+.sello-presidencial .sello-icon{font-size:1rem;margin:.15rem 0}
+.gov-row{border:1px solid var(--line);border-radius:var(--radius-s);padding:1rem 1.1rem;
+  background:var(--input-bg);margin-bottom:.8rem;}
+.gov-row .gov-title{font-weight:600;color:var(--brand);font-size:.95rem;margin-bottom:.3rem;
+  display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+.gov-row .gov-rol{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;
+  padding:.15rem .5rem;border-radius:999px;font-weight:700;background:var(--bg-2);color:var(--muted);}
+.gov-row .gov-rol.presidente{background:linear-gradient(135deg,#d9b23f,var(--gold));color:#3a2f05}
+.gov-row .gov-rol.gerente{background:linear-gradient(135deg,#2fa3a3,#1b7a8c);color:#fff}
+[data-theme="dark"] .gov-row .gov-rol.gerente{color:#0d1114}
+.gov-row .gov-meta{font-size:.78rem;color:var(--muted);margin:.2rem 0}
+.gov-row .gov-meta b{color:var(--brand);font-weight:600}
+.gov-row .gov-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem}
+.gov-empty{font-size:.85rem;color:var(--muted);font-style:italic;padding:.8rem 0;text-align:center}
+@media(max-width:960px){
+  .shell{grid-template-columns:1fr;padding:1rem}
+  .side{position:static;max-height:none;overflow:visible}
+  .nav{display:flex;flex-wrap:wrap;gap:.3rem}
+  .nav li{margin:0}.nav button{width:auto;font-size:.78rem;padding:.45rem .7rem}
+  .nav .divider,.nav .section-label{display:none}
+  .hero-card{padding:1.6rem}h1{font-size:1.5rem}
+  .hero-brand .brand-name{font-size:1.9rem}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">S</div>
+  <div class="titles">
+    <strong>SENTIPENSAR · El Banco de Saberes Vivos</strong>
+    <span>Autobiografía Andragógica · Portafolio · Acreditación · Economía Intelectual</span>
+  </div>
+  <button class="theme-toggle" id="themeToggle" title="Cambiar tema" aria-label="Cambiar tema">
+    <span class="icon-sun">☀️</span><span class="icon-moon">🌙</span>
+  </button>
+  <div class="user-chip" id="userChip" hidden>
+    <span class="rol" id="userRol">—</span>
+    <span>👤 <b id="userName">—</b></span>
+    <button class="btn small ghost" id="btnSalir">Salir</button>
+  </div>
+</header>
+
+<!-- VISTA 1 · APERTURA -->
+<section class="apertura" id="vistaApertura">
+  <div class="hero-card">
+    <span class="eyebrow">Panel 0 · Apertura de Cuenta Vital</span>
+    <div class="hero-brand">
+      <h1 class="brand-name">SENTIPENSAR</h1>
+      <p class="brand-sub">El Banco de Saberes Vivos</p>
+      <p class="brand-lema">"Acredita tu vida. Invierte tu sapiencia."</p>
+    </div>
+    <p style="color:var(--muted);max-width:62ch;text-align:center;margin:1.2rem auto">
+      Bienvenido al Banco de tu Economía Intelectual. Aquí no se deposita dinero:
+      se deposita <b>vida</b>. Esta herramienta te acompaña a
+      <b>descubrirla, nombrarla, valorarla y acreditarla</b>.
+    </p>
+    <div class="metafora-grid">
+      <div class="mini-card"><h4>🏛️ Activos de Conocimiento</h4><p>Todo lo que sabes y que aún no habías nombrado.</p></div>
+      <div class="mini-card"><h4>🪙 Ahorros de Experiencia</h4><p>Lo vivido, lo aprendido, lo atravesado y lo superado.</p></div>
+      <div class="mini-card"><h4>📈 Capital de Competencias</h4><p>Lo que sabes hacer y puedes transferir a nuevos contextos.</p></div>
+    </div>
+
+    <div class="modo-toggle" style="display:flex;justify-content:center;gap:.5rem;margin:1.4rem 0 .8rem;flex-wrap:wrap">
+      <button type="button" class="btn small primary" id="btnModoNuevo" data-modo="nuevo">🌱 Primera vez</button>
+      <button type="button" class="btn small ghost" id="btnModoExistente" data-modo="existente">🔑 Ya tengo cuenta</button>
+    </div>
+
+    <div id="bloqueRegistroNuevo">
+      <div class="grid-2">
+        <label class="field">
+          <span>Nombre completo del titular</span>
+          <input type="text" id="regNombre" placeholder="Escribe tu nombre y apellido">
+        </label>
+        <label class="field">
+          <span>Correo electrónico (será tu llave de acceso)</span>
+          <input type="email" id="regEmail" placeholder="tucorreo@ejemplo.com">
+        </label>
+      </div>
+      <div class="grid-2">
+        <label class="field">
+          <span>Sede o Comunidad</span>
+          <span class="sub">Opcional. Permite segmentar la gobernanza por territorio.</span>
+          <input type="text" id="regSede" placeholder="Ej.: Caricuao, Cumaná, Sucre…">
+        </label>
+        <label class="field">
+          <span>Teléfono (opcional)</span>
+          <span class="sub">Para notificaciones institucionales.</span>
+          <input type="text" id="regTelefono" placeholder="+58 ...">
+        </label>
+      </div>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-top:.6rem">
+        <button class="btn primary" id="btnAbrirCuenta">Abrir mi Cuenta Autobiográfica</button>
+        <span class="save-status" id="regStatus"></span>
+      </div>
+    </div>
+
+    <div id="bloqueAccesoExistente" hidden>
+      <label class="field">
+        <span>Solo ingresa tu correo electrónico</span>
+        <span class="sub">Si ya tienes una cuenta, entra directamente. El sistema reconocerá tu nombre, rol y datos.</span>
+        <input type="email" id="regEmailExistente" placeholder="tucorreo@ejemplo.com">
+      </label>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-top:.6rem">
+        <button class="btn primary" id="btnEntrarCuenta">Entrar a mi Cuenta</button>
+        <span class="save-status" id="regStatusExistente"></span>
+      </div>
+    </div>
+  </div>
+  <p class="cierre" style="margin-top:2.5rem">
+    "Comienza tu inventario. Redacta tu historia. Acredita tu vida."
+    <span>SENTIPENSAR · El Banco de Saberes Vivos</span>
+  </p>
+</section>
+
+<!-- VISTA · SALA DE ESPERA -->
+<section class="sala-espera" id="salaEspera" hidden>
+  <div class="hero-card"><div id="salaEsperaContenido"></div></div>
+</section>
+
+<!-- VISTA 2 · DASHBOARD -->
+<div class="shell" id="vistaDashboard" hidden>
+  <aside class="side">
+    <div class="saldos-box">
+      <h4>Saldos Formativos</h4>
+      <span class="sub">SENTIPENSAR · Actualización en tiempo real</span>
+      <div class="saldo-line"><span>Activos de Conocimiento</span><b id="sldActivos">0</b></div>
+      <div class="saldo-line"><span>Ahorros de Experiencia</span><b id="sldAhorros">0</b></div>
+      <div class="saldo-line"><span>Capital de Competencias</span><b id="sldCapital">0</b></div>
+      <div class="barra"><i id="sldBarra"></i></div>
+      <div class="saldo-line" style="margin-top:.6rem;border:none">
+        <span>Riqueza declarada</span><b id="sldTotal">0%</b>
+      </div>
+    </div>
+    <ul class="nav" id="nav">
+      <li class="section-label">Identidad</li>
+      <li><button data-go="p0"><span class="num">0</span> Apertura de Cuenta Vital</button></li>
+      <li><button data-go="p1"><span class="num">1</span> Tipo de Biografía</button></li>
+      <li class="section-label">Exploración</li>
+      <li><button data-go="p2"><span class="num">2</span> Cajero de la Memoria</button></li>
+      <li><button data-go="p3"><span class="num">3</span> Métodos de Deconstrucción</button></li>
+      <li><button data-go="p4"><span class="num">4</span> Fondos de Inversión Reflexiva</button></li>
+      <li><button data-go="p5"><span class="num">5</span> Revisión y Balance</button></li>
+      <li class="section-label">Síntesis</li>
+      <li><button data-go="p6"><span class="num">6</span> Sentipensante</button></li>
+      <li><button data-go="p7"><span class="num">7</span> Contexto de Actuación</button></li>
+      <li><button data-go="p8"><span class="num">8</span> Auditoría FDPO / DOFA</button></li>
+      <li><button data-go="p9"><span class="num">9</span> Líneas de Investigación</button></li>
+      <li class="section-label">Acreditación</li>
+      <li><button data-go="p10"><span class="num">10</span> Acto de Empalabramiento</button></li>
+      <li><button data-go="p11"><span class="num">11</span> Bóveda del Portafolio</button></li>
+      <li><button data-go="p12"><span class="num">12</span> Sucursales Inspiracionales</button></li>
+      <li><button data-go="p13"><span class="num">13</span> Consejo Asesor Epistémico</button></li>
+      <li><button data-go="p14"><span class="num">14</span> Fichas Académicas</button></li>
+      <li class="section-label">Retiro</li>
+      <li><button data-go="pRetiro"><span class="num">🏦</span> Retirar mis Saberes</button></li>
+      <li class="section-label" id="navGobernanzaLabel" hidden>Gobernanza</li>
+      <li id="navGobernanzaItem" hidden>
+        <button data-go="pGobernanza"><span class="num">👑</span> Panel de Gobernanza</button>
+      </li>
+      <li class="divider"></li>
+      <li><button data-go="pSaldos"><span class="num">$</span> Mis Saldos Formativos</button></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <!-- PANEL 0 -->
+    <section class="panel active" id="p0" data-save-mode="record">
+      <div class="panel-head">
+        <span class="badge">Panel 0</span>
+        <h2>Apertura de Cuenta Vital</h2>
+        <p class="lead">Registra tus datos de titular. Esta es la ficha de identidad de tu cuenta.</p>
+      </div>
+      <div class="card">
+        <h3>Datos del titular</h3>
+        <div class="grid-2">
+          <label class="field"><span>Nombre completo</span>
+            <input type="text" data-sheet="Usuarios" data-field="Nombre" placeholder="Tu nombre"></label>
+          <label class="field"><span>Correo electrónico</span>
+            <input type="email" data-sheet="Usuarios" data-field="Email" placeholder="tucorreo@ejemplo.com"></label>
+        </div>
+        <label class="field">
+          <span>Datos personales</span>
+          <span class="sub">Lugar y fecha de nacimiento, origen familiar, territorio donde creciste.</span>
+          <textarea data-sheet="Perfil" data-field="DatosPersonales" placeholder="Nací en…, crecí en…, mi familia…"></textarea>
+        </label>
+        <div class="grid-2">
+          <label class="field"><span>Ocupación actual</span>
+            <input type="text" data-sheet="Perfil" data-field="Ocupacion" placeholder="A qué te dedicas hoy"></label>
+          <label class="field"><span>Intereses</span>
+            <input type="text" data-sheet="Perfil" data-field="Intereses" placeholder="Temas, campos, preguntas que te mueven"></label>
+        </div>
+        <label class="field"><span>Metas formativas y vitales</span>
+          <span class="sub">¿Qué quieres llegar a ser? ¿Qué título persigues? ¿Para qué?</span>
+          <textarea data-sheet="Perfil" data-field="Metas" placeholder="Mi meta es…"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p0">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 1 -->
+    <section class="panel" id="p1" data-save-mode="record">
+      <div class="panel-head">
+        <span class="badge">Panel 1 · Panel Rector</span>
+        <h2>Tipo de Biografía</h2>
+        <p class="lead">Elige el lente con el que escribirás tu relato.</p>
+      </div>
+      <div class="card">
+        <h3>Selecciona tu tipo de biografía</h3>
+        <p class="hint">Haz clic en "¿Qué significa?" para desplegar la explicación.</p>
+        <div class="opciones" id="opcionesBiografia"></div>
+      </div>
+      <div class="card">
+        <h3>Título y primer depósito</h3>
+        <label class="field"><span>Título de tu autobiografía</span>
+          <input type="text" data-sheet="Autobiografia" data-field="Titulo" placeholder="Un título que nombre tu travesía"></label>
+        <label class="field"><span>Relato autobiográfico</span>
+          <span class="sub">Escribe en primera persona. No busques perfección: busca verdad.</span>
+          <textarea data-sheet="Autobiografia" data-field="Relato" rows="10" placeholder="Yo nací…"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p1">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 2 -->
+    <section class="panel" id="p2" data-save-mode="respuestas" data-panel-num="2">
+      <div class="panel-head">
+        <span class="badge">Panel 2 · Cajero de la Memoria</span>
+        <h2>Panel de Auto-orientación</h2>
+        <p class="lead">Preguntas intuitivas y desencadenantes de alto aprendizaje.</p>
+      </div>
+      <div class="card">
+        <h3>Preguntas desencadenantes</h3>
+        <label class="field"><span>¿Quién soy?</span><textarea data-resp="¿Quién soy?" data-panelq="2"></textarea></label>
+        <label class="field"><span>¿Qué he hecho y dónde he transitado?</span><textarea data-resp="¿Qué he hecho y dónde he transitado?" data-panelq="2"></textarea></label>
+        <label class="field"><span>¿Qué experiencias significativas he vivido?</span><textarea data-resp="¿Qué experiencias significativas he vivido?" data-panelq="2"></textarea></label>
+        <label class="field"><span>¿Cómo interpelo mi propia vida?</span><textarea data-resp="¿Cómo interpelo mi propia vida?" data-panelq="2"></textarea></label>
+      </div>
+      <div class="card">
+        <h3>Niveles de conciencia</h3>
+        <label class="field"><span>Personal – familiar</span><textarea data-resp="Nivel: Personal-familiar" data-panelq="2"></textarea></label>
+        <label class="field"><span>Comunitario</span><textarea data-resp="Nivel: Comunitario" data-panelq="2"></textarea></label>
+        <label class="field"><span>Local</span><textarea data-resp="Nivel: Local" data-panelq="2"></textarea></label>
+        <label class="field"><span>Nacional</span><textarea data-resp="Nivel: Nacional" data-panelq="2"></textarea></label>
+        <label class="field"><span>Mundial</span><textarea data-resp="Nivel: Mundial" data-panelq="2"></textarea></label>
+      </div>
+      <div class="card">
+        <h3>Generador de nuevas preguntas con SAPIENCIA</h3>
+        <div id="extrasP2"></div>
+        <button class="btn ghost small" id="btnNuevaPregunta">✨ Generar nueva pregunta</button>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p2">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 3 -->
+    <section class="panel" id="p3" data-save-mode="respuestas" data-panel-num="3">
+      <div class="panel-head">
+        <span class="badge">Panel 3 · Métodos</span>
+        <h2>Métodos de Deconstrucción</h2>
+        <p class="lead">La Deconstrucción de la Experiencia es nuestra opción metodológica principal.</p>
+      </div>
+      <div class="card">
+        <h3>Características del método</h3>
+        <div class="chips" id="chipsMetodo">
+          <span class="chip" data-resp="Método · Característica" data-panelq="3" data-val="Dialoga, afirma, concreta y muestra tu voz">Dialoga y muestra tu voz</span>
+          <span class="chip" data-resp="Método · Característica" data-panelq="3" data-val="Creativa: reconoce, imagina, posibilita e inventa">Creativa</span>
+          <span class="chip" data-resp="Método · Característica" data-panelq="3" data-val="Contextualiza: dónde, cuándo, quiénes y cómo">Contextualiza</span>
+          <span class="chip" data-resp="Método · Característica" data-panelq="3" data-val="Empodera: faculta, vigoriza y capacita al autor">Empodera</span>
+          <span class="chip" data-resp="Método · Característica" data-panelq="3" data-val="Construye: extrae saberes, epistemologías y comprensiones">Construye saberes</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>¿Cómo aplicaré el método?</h3>
+        <label class="field"><span>Describe tu experiencia a deconstruir</span><textarea data-resp="Método · Experiencia a deconstruir" data-panelq="3"></textarea></label>
+        <label class="field"><span>Saberes y epistemologías que extraigo de ella</span><textarea data-resp="Método · Saberes extraídos" data-panelq="3"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p3">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 4 -->
+    <section class="panel" id="p4" data-save-mode="rows">
+      <div class="panel-head">
+        <span class="badge">Panel 4 · Fondos de Inversión Reflexiva</span>
+        <h2>Dimensiones de la Reflexión</h2>
+        <p class="lead">Cada dimensión es un filtro por el que pasarás tu experiencia.</p>
+      </div>
+      <div class="card">
+        <h3>Filtros de lectura de tu vida</h3>
+        <div data-rows="Dimensiones" id="repDimensiones">
+          <div class="rep-item" data-keyfield="Dimension">
+            <input type="hidden" data-rfield="Dimension" value="Lo Ontológico">
+            <label class="opcion" style="border:none;padding:0;background:none">
+              <input type="checkbox" data-rfield="Seleccionada" style="margin-top:.25rem">
+              <span>Lo Ontológico <span class="sub" style="font-weight:400">— ¿Quién soy? ¿Qué es el ser que se narra?</span></span>
+            </label>
+            <textarea data-rfield="Reflexion" placeholder="Mi reflexión ontológica…" style="margin-top:.6rem"></textarea>
+          </div>
+          <div class="rep-item" data-keyfield="Dimension">
+            <input type="hidden" data-rfield="Dimension" value="Lo Epistemológico">
+            <label class="opcion" style="border:none;padding:0;background:none">
+              <input type="checkbox" data-rfield="Seleccionada" style="margin-top:.25rem">
+              <span>Lo Epistemológico <span class="sub" style="font-weight:400">— ¿Cómo conozco lo que conozco?</span></span>
+            </label>
+            <textarea data-rfield="Reflexion" placeholder="Mi reflexión epistemológica…" style="margin-top:.6rem"></textarea>
+          </div>
+          <div class="rep-item" data-keyfield="Dimension">
+            <input type="hidden" data-rfield="Dimension" value="Lo Axiológico">
+            <label class="opcion" style="border:none;padding:0;background:none">
+              <input type="checkbox" data-rfield="Seleccionada" style="margin-top:.25rem">
+              <span>Lo Axiológico <span class="sub" style="font-weight:400">— ¿Qué valores sostienen mi actuar?</span></span>
+            </label>
+            <textarea data-rfield="Reflexion" placeholder="Mi reflexión axiológica…" style="margin-top:.6rem"></textarea>
+          </div>
+          <div class="rep-item" data-keyfield="Dimension">
+            <input type="hidden" data-rfield="Dimension" value="La Hermenéutica">
+            <label class="opcion" style="border:none;padding:0;background:none">
+              <input type="checkbox" data-rfield="Seleccionada" style="margin-top:.25rem">
+              <span>La Hermenéutica <span class="sub" style="font-weight:400">— ¿Cómo interpreto mi propio texto vital?</span></span>
+            </label>
+            <textarea data-rfield="Reflexion" placeholder="Mi reflexión hermenéutica…" style="margin-top:.6rem"></textarea>
+          </div>
+          <div class="rep-item" data-keyfield="Dimension">
+            <input type="hidden" data-rfield="Dimension" value="La Ontología">
+            <label class="opcion" style="border:none;padding:0;background:none">
+              <input type="checkbox" data-rfield="Seleccionada" style="margin-top:.25rem">
+              <span>La Ontología <span class="sub" style="font-weight:400">— Estudio del ser y su devenir histórico</span></span>
+            </label>
+            <textarea data-rfield="Reflexion" placeholder="Mi reflexión desde la ontología…" style="margin-top:.6rem"></textarea>
+          </div>
+          <div class="rep-item" data-keyfield="Dimension">
+            <input type="hidden" data-rfield="Dimension" value="La Heterotópica">
+            <label class="opcion" style="border:none;padding:0;background:none">
+              <input type="checkbox" data-rfield="Seleccionada" style="margin-top:.25rem">
+              <span>La Heterotópica <span class="sub" style="font-weight:400">— Otros lugares, otros modos de estar en el mundo</span></span>
+            </label>
+            <textarea data-rfield="Reflexion" placeholder="Mi reflexión heterotópica…" style="margin-top:.6rem"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p4">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 5 -->
+    <section class="panel" id="p5" data-save-mode="respuestas" data-panel-num="5">
+      <div class="panel-head">
+        <span class="badge">Panel 5 · Revisión y Balance</span>
+        <h2>Panel de Revisión</h2>
+        <p class="lead">Revisión del pasado y análisis del presente.</p>
+      </div>
+      <div class="card">
+        <h3>Mi estado cognitivo hoy</h3>
+        <label class="field"><span>¿Quién soy cognitivamente hoy?</span><textarea data-resp="¿Quién soy cognitivamente hoy?" data-panelq="5"></textarea></label>
+        <label class="field"><span>¿Cuáles son mis propias ideas, definiciones y conceptos?</span><textarea data-resp="Mis propias ideas, definiciones y conceptos" data-panelq="5"></textarea></label>
+        <label class="field"><span>¿Cómo se obtiene el conocimiento y su validez?</span><textarea data-resp="¿Cómo se obtiene el conocimiento y su validez?" data-panelq="5"></textarea></label>
+        <label class="field"><span>¿Qué sabemos y qué sabemos hacer?</span><textarea data-resp="¿Qué sabemos y qué sabemos hacer?" data-panelq="5"></textarea></label>
+      </div>
+      <div class="card">
+        <h3>El Valor: teorías, metodologías y autores</h3>
+        <label class="field"><span>¿Qué teorías, metodologías y autores hemos utilizado?</span><textarea data-resp="Teorías, metodologías y autores de mi trayectoria" data-panelq="5"></textarea></label>
+        <label class="field"><span>El estado ideal y los valores respecto a la vida</span><textarea data-resp="Estado ideal y valores respecto a la vida" data-panelq="5"></textarea></label>
+        <label class="field"><span>¿Cómo queremos llegar a ser como personas?</span><textarea data-resp="¿Cómo queremos llegar a ser como personas?" data-panelq="5"></textarea></label>
+        <label class="field"><span>¿Qué valores adquirimos en la familia y el entorno?</span><textarea data-resp="Valores adquiridos en la familia y el entorno" data-panelq="5"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p5">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 6 -->
+    <section class="panel" id="p6" data-save-mode="record">
+      <div class="panel-head">
+        <span class="badge">Panel 6 · Sentipensante</span>
+        <h2>El Valor Humano del Auto-reconocimiento</h2>
+        <p class="lead">Reconocer e integrar las capacidades de nuestra naturaleza sensible.</p>
+      </div>
+      <div class="card">
+        <p class="frase-guia">"SENTIPENSANTE: Tocar con la mente lo que ha sido tocado con el corazón." — Orlando Fals Borda</p>
+        <div class="grid-2">
+          <label class="field"><span>Inteligencia</span><textarea data-sheet="Sentipensante" data-field="Inteligencia"></textarea></label>
+          <label class="field"><span>Recuerdo</span><textarea data-sheet="Sentipensante" data-field="Recuerdo"></textarea></label>
+          <label class="field"><span>Memoria</span><textarea data-sheet="Sentipensante" data-field="Memoria"></textarea></label>
+          <label class="field"><span>Emoción</span><textarea data-sheet="Sentipensante" data-field="Emocion"></textarea></label>
+          <label class="field"><span>Voluntad</span><textarea data-sheet="Sentipensante" data-field="Voluntad"></textarea></label>
+          <label class="field"><span>Sentir</span><textarea data-sheet="Sentipensante" data-field="Sentir"></textarea></label>
+          <label class="field"><span>Afectividad</span><textarea data-sheet="Sentipensante" data-field="Afectividad"></textarea></label>
+        </div>
+        <label class="field"><span>Reflexión sentipensante integradora</span>
+          <textarea data-sheet="Sentipensante" data-field="Reflexion" rows="5"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p6">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 7 -->
+    <section class="panel" id="p7" data-save-mode="record">
+      <div class="panel-head">
+        <span class="badge">Panel 7 · Contexto de Actuación</span>
+        <h2>Panel de Actuación</h2>
+        <p class="lead">Un inventario sin contexto es solo una lista.</p>
+      </div>
+      <div class="card">
+        <label class="field"><span>Coordenadas · ¿Dónde y en qué fechas?</span><textarea data-sheet="Actuacion" data-field="Coordenadas"></textarea></label>
+        <label class="field"><span>Instituciones · Nombres reales</span><textarea data-sheet="Actuacion" data-field="Instituciones"></textarea></label>
+        <label class="field"><span>Actores Clave · Personas influyentes</span><textarea data-sheet="Actuacion" data-field="ActoresClave"></textarea></label>
+        <label class="field"><span>Entorno · ¿Cómo percibías la realidad?</span><textarea data-sheet="Actuacion" data-field="Entorno"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p7">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 8 -->
+    <section class="panel" id="p8" data-save-mode="record">
+      <div class="panel-head">
+        <span class="badge">Panel 8 · Auditoría</span>
+        <h2>Herramientas FDPO y DOFA</h2>
+        <p class="lead">El método FDPO estructura tu autoaprendizaje. La DOFA te permite autoevaluarte.</p>
+      </div>
+      <div class="card">
+        <h3>Método FDPO · estructura del autoaprendizaje</h3>
+        <label class="field"><span>Fuente · los datos</span><textarea data-sheet="FDPO" data-field="Fuente"></textarea></label>
+        <label class="field"><span>Desarrollo · codificación de temas</span><textarea data-sheet="FDPO" data-field="Desarrollo"></textarea></label>
+        <label class="field"><span>Planimetría · arquitectura del proyecto</span><textarea data-sheet="FDPO" data-field="Planimetria"></textarea></label>
+        <label class="field"><span>Objetivo · solución o producto final</span><textarea data-sheet="FDPO" data-field="Objetivo"></textarea></label>
+      </div>
+      <div class="card">
+        <h3>La DOFA como herramienta de autoevaluación</h3>
+        <div class="grid-2">
+          <label class="field"><span>Debilidades</span><textarea data-sheet="DOFA" data-field="Debilidades"></textarea></label>
+          <label class="field"><span>Amenazas</span><textarea data-sheet="DOFA" data-field="Amenazas"></textarea></label>
+        </div>
+        <label class="field"><span>¿Qué estrategias adoptar para superar las falencias académicas?</span><textarea data-sheet="DOFA" data-field="Estrategias"></textarea></label>
+        <label class="field"><span>¿Cómo neutralizar las amenazas?</span><textarea data-sheet="DOFA" data-field="DecisionesFuturas"></textarea></label>
+        <div class="grid-2">
+          <label class="field"><span>Fortalezas</span><textarea data-sheet="DOFA" data-field="Fortalezas"></textarea></label>
+          <label class="field"><span>Oportunidades</span><textarea data-sheet="DOFA" data-field="Oportunidades"></textarea></label>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p8">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 9 -->
+    <section class="panel" id="p9" data-save-mode="record">
+      <div class="panel-head">
+        <span class="badge">Panel 9 · Líneas de Investigación</span>
+        <h2>Vinculación con la Línea y el Título</h2>
+      </div>
+      <div class="card">
+        <label class="field"><span>Línea de investigación escogida</span><input type="text" data-sheet="LineasInvestigacion" data-field="Linea"></label>
+        <label class="field"><span>Título al que aspiro</span><input type="text" data-sheet="LineasInvestigacion" data-field="Titulo"></label>
+        <label class="field"><span>¿Cómo vinculo este inventario con la línea y el título?</span><textarea data-sheet="LineasInvestigacion" data-field="Vinculacion" rows="6"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p9">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 10 -->
+    <section class="panel" id="p10" data-save-mode="respuestas" data-panel-num="10">
+      <div class="panel-head">
+        <span class="badge">Panel 10 · Acto de Empalabramiento</span>
+        <h2>Manifestación Final de la Investigación Autobiográfica</h2>
+      </div>
+      <div class="card">
+        <h3>Mi investigación autobiográfica es…</h3>
+        <div class="chips">
+          <span class="chip" data-resp="Empoderar · Cualidades" data-panelq="10" data-val="Consecución histórica">Consecución histórica</span>
+          <span class="chip" data-resp="Empoderar · Cualidades" data-panelq="10" data-val="Contextualizada">Contextualizada</span>
+          <span class="chip" data-resp="Empoderar · Cualidades" data-panelq="10" data-val="Sistemática e Insurgente">Sistemática e Insurgente</span>
+          <span class="chip" data-resp="Empoderar · Cualidades" data-panelq="10" data-val="Adaptativa y Aprendedora">Adaptativa y Aprendedora</span>
+          <span class="chip" data-resp="Empoderar · Cualidades" data-panelq="10" data-val="Académica y Argumentada">Académica y Argumentada</span>
+          <span class="chip" data-resp="Empoderar · Cualidades" data-panelq="10" data-val="Sentipensante">Sentipensante</span>
+          <span class="chip" data-resp="Empoderar · Cualidades" data-panelq="10" data-val="Discursiva y Conclusiva">Discursiva y Conclusiva</span>
+        </div>
+        <label class="field" style="margin-top:1.2rem">
+          <span>Manifiesto de empalabramiento</span>
+          <textarea data-resp="Empoderar · Manifiesto" data-panelq="10" rows="7" placeholder="Hoy reconozco que…"></textarea>
+        </label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p10">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 11 -->
+    <section class="panel" id="p11" data-save-mode="record">
+      <div class="panel-head">
+        <span class="badge">Panel 11 · Bóveda del Portafolio</span>
+        <h2>Arquitectura del Portafolio</h2>
+      </div>
+      <div class="card">
+        <label class="field"><span>1 · La Experiencia</span><textarea data-sheet="Portafolio" data-field="Experiencia" rows="5"></textarea></label>
+        <label class="field"><span>2 · La Reflexión</span><textarea data-sheet="Portafolio" data-field="Reflexion" rows="5"></textarea></label>
+        <label class="field"><span>3 · Las Evidencias</span><textarea data-sheet="Portafolio" data-field="Evidencias" rows="5"></textarea></label>
+        <label class="field"><span>4 · La Organización</span><textarea data-sheet="Portafolio" data-field="Organizacion" rows="5"></textarea></label>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p11">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 12 -->
+    <section class="panel" id="p12" data-save-mode="rows">
+      <div class="panel-head">
+        <span class="badge">Panel 12 · Sucursales Inspiracionales</span>
+        <h2>Tu Ruta de Aprendizaje</h2>
+      </div>
+      <div class="card">
+        <h3>Recursos y textos de inspiración</h3>
+        <div data-rows="Inspiracionales" id="repInspiracionales"></div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p12">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 13 -->
+    <section class="panel" id="p13" data-save-mode="rows">
+      <div class="panel-head">
+        <span class="badge">Panel 13 · Consejo Asesor Epistémico</span>
+        <h2>Referentes que Sostienen tu Relato</h2>
+      </div>
+      <div class="card">
+        <h3>Consejo Asesor · Fundamentos epistémicos</h3>
+        <div class="referent-grid" id="referentGrid" data-rows="ConsejoAsesor"></div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p13">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- PANEL 14 -->
+    <section class="panel" id="p14" data-save-mode="rows">
+      <div class="panel-head">
+        <span class="badge">Panel 14 · Fichas Académicas</span>
+        <h2>Fichas de Lectura</h2>
+      </div>
+      <div class="card">
+        <h3>Registro de fichas</h3>
+        <div data-rows="Fichas" id="repFichas"></div>
+        <button class="btn ghost small" id="btnAddFicha">＋ Agregar nueva ficha</button>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="p14">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <!-- GOBERNANZA -->
+    <section class="panel" id="pGobernanza">
+      <div class="panel-head">
+        <span class="badge">Gobernanza · Presidencia y Gerencia</span>
+        <h2>Panel de Gobernanza</h2>
+        <p class="lead">Autorice cuentas, nombre gerentes y supervise el Banco.</p>
+      </div>
+      <div class="card">
+        <h3>Rol actual: <span id="gobernanzaRol" style="color:var(--gold)">—</span></h3>
+        <p class="hint">Solo Presidente y Gerentes tienen acceso. Las acciones quedan registradas con cadena de responsabilidad.</p>
+        <button class="btn ghost small" id="btnRefrescarGobernanza">🔄 Refrescar padrón</button>
+      </div>
+      <div class="card">
+        <h3>🟡 Solicitudes pendientes de autorización</h3>
+        <div id="gobernanzaPendientes"></div>
+      </div>
+      <div class="card">
+        <h3>🟢 Cuentas autorizadas</h3>
+        <div id="gobernanzaAutorizadas"></div>
+      </div>
+      <div class="card" id="gobernanzaPresidente" hidden>
+        <h3>👑 Acciones del Presidente</h3>
+        <p class="hint">Solo el Presidente puede nombrar o degradar Gerentes.</p>
+        <div id="gobernanzaPresidenteAcciones"></div>
+      </div>
+    </section>
+
+    <!-- RETIRO -->
+    <section class="panel" id="pRetiro">
+      <div class="panel-head">
+        <span class="badge">Retiro · Estado de Cuenta</span>
+        <h2>Retirar mis Saberes</h2>
+        <p class="lead">Convierte tus depósitos en productos tangibles. Tu economía intelectual se hace visible, imprimible, escuchable, transferible y presentable.</p>
+      </div>
+      <div class="card">
+        <h3>Formas de retiro</h3>
+        <p class="hint">Cada botón entrega tu inventario en un formato distinto.</p>
+        <div class="retiro-actions">
+          <button class="retiro-btn primary" id="btnEstadoCuenta">
+            <span class="ico">📄</span><strong>Ver Estado de Cuenta</strong>
+            <span>Vista previa consolidada en pantalla</span>
+          </button>
+          <button class="retiro-btn" id="btnImprimir">
+            <span class="ico">🖨️</span><strong>Imprimir / Guardar PDF</strong>
+            <span>Abre el diálogo de impresión del navegador</span>
+          </button>
+          <button class="retiro-btn" id="btnDescargarTXT">
+            <span class="ico">📝</span><strong>Descargar TXT</strong>
+            <span>Texto plano para Word, Drive o correo</span>
+          </button>
+          <button class="retiro-btn" id="btnDescargarJSON">
+            <span class="ico">💾</span><strong>Respaldo JSON</strong>
+            <span>Copia de seguridad completa</span>
+          </button>
+          <button class="retiro-btn gold" id="btnCertificado">
+            <span class="ico">🏅</span><strong>Certificado de Acreditación</strong>
+            <span>Con firma y sello del Presidente</span>
+          </button>
+          <div class="retiro-btn audio" id="btnSumula" role="button" tabindex="0">
+            <span class="ico">🎧</span><strong>Súmula Narrada</strong>
+            <span>Audiolibro del portafolio en .txt</span>
+            <button type="button" class="pista-sumula" id="btnPistaSumula">¿Qué es una Súmula?</button>
+            <div class="nota-sumula" id="notaSumula">
+              <b>Súmula</b> · Del latín <i>summula</i>, diminutivo de <i>summa</i>. Compendio o sumario que contiene los principios claves y elementales de una materia. Aquí, la <b>narración oral de tu portafolio</b>, adaptada para ser escuchada como audiolibro.
+            </div>
+          </div>
+          <button class="retiro-btn tree" id="btnTreeF">
+            <span class="ico">🌳</span><strong>Árbol del Saber</strong>
+            <span>Mapa jerárquico del portafolio en .txt</span>
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Vista Previa del Retiro</h3>
+        <p class="hint" id="hintPreview">Pulsa cualquiera de las formas de retiro para generar la vista previa.</p>
+        <div class="retiro-preview" id="retiroPreview">
+          <p class="sub">Aún no has generado tu retiro.<br>Pulsa un botón superior para consolidar tus saberes.</p>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" id="btnActualizarPreview">🔄 Actualizar vista previa</button>
+        <span class="save-status" id="retiroStatus"></span>
+      </div>
+    </section>
+
+    <!-- SALDOS -->
+    <section class="panel" id="pSaldos" data-save-mode="rows">
+      <div class="panel-head">
+        <span class="badge">Balance · SENTIPENSAR</span>
+        <h2>Mis Saldos Formativos</h2>
+      </div>
+      <div class="card">
+        <div class="metafora-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.9rem">
+          <div class="mini-card"><h4>Activos de Conocimiento</h4><p style="font-family:var(--serif);font-size:1.6rem;color:var(--brand)" id="bigActivos">0</p></div>
+          <div class="mini-card"><h4>Ahorros de Experiencia</h4><p style="font-family:var(--serif);font-size:1.6rem;color:var(--brand)" id="bigAhorros">0</p></div>
+          <div class="mini-card"><h4>Capital de Competencias</h4><p style="font-family:var(--serif);font-size:1.6rem;color:var(--brand)" id="bigCapital">0</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Registro de hitos y activos declarados</h3>
+        <div data-rows="SaldosFormativos" id="repSaldos"></div>
+        <button class="btn ghost small" id="btnAddSaldo">＋ Agregar un nuevo depósito</button>
+      </div>
+      <div class="panel-actions">
+        <button class="btn primary" data-save="pSaldos">Depositar en mi cuenta</button>
+        <span class="save-status"></span>
+      </div>
+    </section>
+
+    <p class="cierre">
+      "Comienza tu inventario. Redacta tu historia. Acredita tu vida."
+      <span>SENTIPENSAR · El Banco de Saberes Vivos</span>
+    </p>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────
+   CONFIGURACIÓN · La URL del Web App viene pre-configurada
+   ───────────────────────────────────────────────────────────── */
+const LS_KEY = 'SENTIPENSAR_DB_V1';
+const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbyta8vGQnnpnVusdgb8R9NuzzoOmGY3jbXMftObPwfsJpKljj5OWipzy7ajTCZ3ccrwlw/exec';
+
+let DB = { usuario:null, data:{}, apiUrl: DEFAULT_API_URL, presidenteNombre:'' };
+
+function initTheme(){
+  const btn = document.getElementById('themeToggle');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    if(isDark){ html.removeAttribute('data-theme'); try{localStorage.setItem('SENTIPENSAR_THEME','light');}catch(e){} }
+    else{ html.setAttribute('data-theme','dark'); try{localStorage.setItem('SENTIPENSAR_THEME','dark');}catch(e){} }
+  });
+}
+
+function cargarDB(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) DB = Object.assign(DB, JSON.parse(raw));
+    if(!DB.apiUrl) DB.apiUrl = DEFAULT_API_URL;
+  }catch(e){ console.warn('No se pudo cargar el almacén local', e); }
+}
+function persistir(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }catch(e){} }
+function uid(){ return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,9); }
+function hoyISO(){ return new Date().toISOString().slice(0,10); }
+
+const API = {
+  url(){ return (DB.apiUrl || DEFAULT_API_URL).trim(); },
+  async post(payload){
+    const url = this.url();
+    if(!url) return { ok:true, offline:true };
+    try{
+      const res = await fetch(url, {
+        method:'POST',
+        headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect:'follow'
+      });
+      const txt = await res.text();
+      try{ return JSON.parse(txt); }
+      catch(e){ return { ok:false, error:'Respuesta no JSON: ' + txt.slice(0,180) }; }
+    }catch(err){ return { ok:false, error:'Error de red: ' + err.message }; }
+  },
+  async get(params){
+    const url = this.url();
+    if(!url) return { ok:true, offline:true };
+    try{
+      const qs = new URLSearchParams(params).toString();
+      const res = await fetch(url + '?' + qs, { method:'GET', redirect:'follow' });
+      return JSON.parse(await res.text());
+    }catch(err){ return { ok:false, error:'Error de red: ' + err.message }; }
+  }
+};
+
+const $  = (s, ctx) => (ctx||document).querySelector(s);
+const $$ = (s, ctx) => Array.from((ctx||document).querySelectorAll(s));
+
+let toastTimer = null;
+function toast(msg, esError){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.toggle('err', !!esError);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+function setStatus(el, msg, tipo){
+  if(!el) return;
+  el.textContent = msg;
+  el.className = 'save-status' + (tipo ? ' ' + tipo : '');
+}
+
+function collectRecords(panelEl){
+  const out = {};
+  $$('[data-sheet][data-field]', panelEl).forEach(el=>{
+    const s = el.dataset.sheet, f = el.dataset.field;
+    out[s] = out[s] || {};
+    if(el.type === 'checkbox'){
+      out[s][f] = el.checked ? 'Sí' : 'No';
+    }else if(el.type === 'radio'){
+      if(el.checked) out[s][f] = el.value;
+      else if(!(f in out[s])) out[s][f] = '';
+    }else{ out[s][f] = el.value; }
+  });
+  return out;
+}
+function collectRespuestas(panelEl){
+  const map = new Map();
+  $$('[data-resp]', panelEl).forEach(el=>{
+    const q = el.dataset.resp;
+    const p = el.dataset.panelq || '';
+    if(!map.has(q)) map.set(q, { Panel:p, Pregunta:q, Respuesta:'' });
+    const rec = map.get(q);
+    if(el.classList && el.classList.contains('chip')){
+      if(el.classList.contains('on')){
+        rec.Respuesta = rec.Respuesta ? rec.Respuesta + ' | ' + el.dataset.val : el.dataset.val;
+      }
+      return;
+    }
+    if(el.type === 'checkbox'){
+      if(el.checked) rec.Respuesta = rec.Respuesta ? rec.Respuesta + ' | ' + el.value : el.value;
+    }else if(el.type === 'radio'){
+      if(el.checked) rec.Respuesta = el.value;
+    }else{ rec.Respuesta = el.value; }
+  });
+  return Array.from(map.values());
+}
+function collectRows(container){
+  const rows = [];
+  $$('.rep-item', container).forEach(item=>{
+    const row = {};
+    let vacio = true;
+    $$('[data-rfield]', item).forEach(f=>{
+      let v;
+      if(f.type === 'checkbox') v = f.checked ? 'Sí' : 'No';
+      else v = f.value;
+      row[f.dataset.rfield] = v;
+      if(String(v).trim() && String(v).trim() !== 'No') vacio = false;
+    });
+    if(!vacio) rows.push(row);
+  });
+  return rows;
+}
+
+function localSave(job){
+  const { sheet, rows, filtro } = job;
+  DB.data[sheet] = DB.data[sheet] || [];
+  if(filtro && Object.keys(filtro).length){
+    DB.data[sheet] = DB.data[sheet].filter(r=>{
+      return !Object.keys(filtro).every(k => String(r[k]) === String(filtro[k]));
+    });
+  }else{ DB.data[sheet] = []; }
+  (rows||[]).forEach(r=>{
+    DB.data[sheet].push(Object.assign({}, r, {
+      ID: r.ID || uid(),
+      IDUsuario: DB.usuario ? DB.usuario.id : ''
+    }));
+  });
+  persistir();
+}
+
+function buildJobs(panelId){
+  const panel = document.getElementById(panelId);
+  if(!panel) return [];
+  const mode = panel.dataset.saveMode;
+  const jobs = [];
+  if(mode === 'record'){
+    const recs = collectRecords(panel);
+    Object.keys(recs).forEach(sheet=>{ jobs.push({ sheet, rows:[recs[sheet]] }); });
+  } else if(mode === 'respuestas'){
+    const num = panel.dataset.panelNum;
+    jobs.push({ sheet:'Respuestas', filtro:{ Panel: num }, rows: collectRespuestas(panel) });
+  } else if(mode === 'rows'){
+    const cont = $('[data-rows]', panel);
+    if(cont){ jobs.push({ sheet: cont.dataset.rows, rows: collectRows(cont) }); }
+  }
+  return jobs;
+}
+
+async function guardarPanel(panelId, btn){
+  if(!DB.usuario){ toast('Primero debes abrir tu Cuenta Autobiográfica.', true); return; }
+  if(!DB.usuario.autorizado){ toast('Su cuenta no ha sido autorizada. No puede depositar.', true); return; }
+  const jobs = buildJobs(panelId);
+  if(!jobs.length){ toast('No hay nada que depositar en este panel.'); return; }
+  jobs.forEach(localSave);
+  const statusEl = $('.save-status', document.getElementById(panelId));
+  if(btn) btn.disabled = true;
+  setStatus(statusEl, 'Depositando…');
+  const resp = await API.post({
+    action:'guardar',
+    idUsuario: DB.usuario.id,
+    jobs: jobs.map(j => ({ sheet:j.sheet, filtro:j.filtro||{}, rows:j.rows }))
+  });
+  if(btn) btn.disabled = false;
+  if(resp && resp.ok){
+    setStatus(statusEl, resp.offline
+      ? '✔ Guardado localmente (sin conexión a Sheets)'
+      : '✔ Depósito acreditado en tu cuenta', 'ok');
+    toast(resp.offline ? 'Guardado en este navegador.' : '¡Depósito acreditado!');
+  }else{
+    setStatus(statusEl, '⚠ ' + (resp && resp.error ? resp.error : 'No se pudo guardar'), 'err');
+    toast('No se pudo sincronizar: ' + (resp && resp.error ? resp.error : 'desconocido'), true);
+  }
+  renderSaldos();
+}
+
+function setFieldValue(el, val){
+  if(val === undefined || val === null) return;
+  val = String(val);
+  if(el.classList && el.classList.contains('chip')){
+    if(val.split('|').map(s=>s.trim()).indexOf(el.dataset.val) >= 0) el.classList.add('on');
+    return;
+  }
+  if(el.type === 'checkbox'){
+    el.checked = (val === 'Sí' || val === 'true' || val === 'TRUE');
+  }else if(el.type === 'radio'){
+    el.checked = (val === el.value);
+  }else{ el.value = val; }
+}
+
+function hydrateAll(){
+  if(!DB.usuario) return;
+  $$('[data-sheet][data-field]').forEach(el=>{
+    const rows = DB.data[el.dataset.sheet] || [];
+    const row = rows[0];
+    if(row && row[el.dataset.field] !== undefined) setFieldValue(el, row[el.dataset.field]);
+  });
+  const respuestas = DB.data.Respuestas || [];
+  $$('[data-resp]').forEach(el=>{
+    const q = el.dataset.resp;
+    const row = respuestas.find(r => String(r.Pregunta) === q);
+    if(row) setFieldValue(el, row.Respuesta);
+  });
+  $$('[data-rows]').forEach(container=>{
+    const sheet = container.dataset.rows;
+    if(sheet === 'SaldosFormativos' || sheet === 'Fichas') return;
+    const rows = DB.data[sheet] || [];
+    $$('.rep-item', container).forEach(item=>{
+      const keyField = item.dataset.keyfield;
+      if(!keyField) return;
+      const keyEl = $(`[data-rfield="${keyField}"]`, item);
+      if(!keyEl) return;
+      const row = rows.find(r => String(r[keyField]) === String(keyEl.value));
+      if(!row) return;
+      $$('[data-rfield]', item).forEach(f=>{
+        if(f.dataset.rfield === keyField) return;
+        if(row[f.dataset.rfield] !== undefined) setFieldValue(f, row[f.dataset.rfield]);
+      });
+    });
+  });
+  renderSaldos();
+}
+
+const TIPOS_BIOGRAFIA = [
+  { v:'Autobiografía Andragógica', d:'Narra el aprendizaje adulto desde la experiencia.' },
+  { v:'Autobiografía Intencionada', d:'Se escribe con un propósito declarado: sanar, comprender, transformar.' },
+  { v:'Autobiografía como Episteme', d:'La propia vida se constituye en forma de conocimiento válido.' },
+  { v:'Autobiografía como Investigación', d:'Se asume el yo como objeto y método de indagación sistemática.' },
+  { v:'Biografía Intencionada', d:'Se narra la vida de otro con una intención pedagógica.' },
+  { v:'Biografía Investigativa', d:'Se reconstruye la vida de otro con rigor metodológico.' },
+  { v:'Otra (definir por el facilitador)', d:'Espacio abierto para el enfoque pertinente a tu contexto.' }
+];
+
+function renderTiposBiografia(){
+  const cont = $('#opcionesBiografia');
+  if(!cont || cont.dataset.listo) return;
+  cont.dataset.listo = '1';
+  TIPOS_BIOGRAFIA.forEach(t=>{
+    const div = document.createElement('div');
+    div.className = 'opcion';
+    div.innerHTML = '<label>' +
+        '<input type="radio" name="tipoBiografia" data-sheet="Autobiografia" data-field="TipoBiografia" value="' + t.v + '">' +
+        '<span>' + t.v + '</span></label>' +
+      '<button type="button" class="toggle">¿Qué significa?</button>' +
+      '<p class="desc">' + t.d + '</p>';
+    cont.appendChild(div);
+    const radio = $('input', div);
+    const toggle = $('.toggle', div);
+    radio.addEventListener('change', ()=>{
+      $$('.opcion', cont).forEach(o=>o.classList.remove('on'));
+      div.classList.add('on');
+    });
+    toggle.addEventListener('click', ()=> div.classList.toggle('abierta'));
+  });
+}
+
+const BANCO_PREGUNTAS = [
+  '¿Qué herida de mi historia se convirtió en sabiduría?',
+  '¿Qué aprendí en el lugar donde menos esperaba aprender?',
+  '¿Qué versión de mí mismo tuve que dejar morir para crecer?',
+  '¿Qué me enseñó el fracaso que ningún éxito me pudo enseñar?',
+  '¿Quiénes fueron mis maestros invisibles?',
+  '¿Qué he repetido de mi familia sin darme cuenta?',
+  '¿Qué de mí pertenece a mi territorio y qué es mío propio?',
+  '¿En qué momento supe que ya no era el mismo?',
+  '¿Qué sé hacer hoy que no sabía hacer hace diez años?',
+  '¿Qué preguntas me siguen habitando y aún no he respondido?',
+  '¿Cómo se ha transformado mi manera de mirar a los otros?',
+  '¿Qué legado quiero dejar escrito con mi propia vida?'
+];
+let preguntaIdx = 0;
+function agregarPregunta(){
+  const cont = $('#extrasP2');
+  const q = BANCO_PREGUNTAS[preguntaIdx % BANCO_PREGUNTAS.length];
+  preguntaIdx++;
+  const label = document.createElement('label');
+  label.className = 'field';
+  label.innerHTML = '<span>' + q + '</span><textarea data-resp="' + q.replace(/"/g,'&quot;') + '" data-panelq="2"></textarea>';
+  cont.appendChild(label);
+  label.querySelector('textarea').focus();
+}
+
+const RECURSOS = [
+  { n:'Teoría Literaria · Henry Inojosa — La Autobiografía', p:'Explora los fundamentos literarios del género autobiográfico.' },
+  { n:'Teoría Literaria · Ángela M. Robledo — Pistas para escribir', p:'Herramientas prácticas para comenzar a escribir tu relato.' },
+  { n:'Cine y Sanación · Película "Escritores de la Libertad"', p:'Observa el poder edificador de la autobiografía en los jóvenes.' },
+  { n:'Metodología · La autobiografía de Paulo Freire', p:'Análisis de los recursos literarios del autor.' },
+  { n:'Investigación Cualitativa · Serie "Los Baqueanos"', p:'Recurso audiovisual sobre investigación y territorio.' },
+  { n:'Investigación Cualitativa · Tele-clase "Acción Sistematización"', p:'Sistematización de experiencias como método.' },
+  { n:'Lo Íntimo · Construcción Escrita', p:'Redacción en primera persona. Un ejercicio reflexivo, individual y sanador.' },
+  { n:'Lo Comunitario · Socialización', p:'Lectura en la comunidad de aprendizaje.' },
+  { n:'Lo Público · Presentación', p:'Exposición pública y final de las autobiografías.' }
+];
+function renderInspiracionales(){
+  const cont = $('#repInspiracionales');
+  if(!cont || cont.dataset.listo) return;
+  cont.dataset.listo = '1';
+  RECURSOS.forEach(r=>{
+    const div = document.createElement('div');
+    div.className = 'rep-item';
+    div.dataset.keyfield = 'Recurso';
+    div.innerHTML =
+      '<input type="hidden" data-rfield="Recurso" value="' + r.n.replace(/"/g,'&quot;') + '">' +
+      '<div class="rep-title">' + r.n + '</div>' +
+      '<p class="hint" style="margin-top:-.3rem">' + r.p + '</p>' +
+      '<div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem">' +
+        '<input type="file" accept=".txt,text/plain" class="txtInput" style="font-size:.8rem">' +
+        '<span class="save-status txtStatus"></span>' +
+      '</div>' +
+      '<label class="field"><span>Texto cargado (.txt)</span>' +
+        '<textarea data-rfield="Texto" rows="4"></textarea></label>' +
+      '<label class="field" style="margin-bottom:0"><span>Mis notas y hallazgos</span>' +
+        '<textarea data-rfield="Notas" rows="3"></textarea></label>';
+    cont.appendChild(div);
+    const fileInput = $('.txtInput', div);
+    const status = $('.txtStatus', div);
+    const textarea = $('[data-rfield="Texto"]', div);
+    fileInput.addEventListener('change', ()=>{
+      const file = fileInput.files && fileInput.files[0];
+      if(!file) return;
+      if(!/\.txt$/i.test(file.name) && file.type !== 'text/plain'){
+        setStatus(status, 'Solo archivos .txt', 'err'); return;
+      }
+      const reader = new FileReader();
+      reader.onload = e=>{
+        textarea.value = e.target.result;
+        setStatus(status, '✔ ' + file.name + ' cargado', 'ok');
+        marcarCambio();
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+  });
+}
+
+const REFERENTES = [
+  { n:'Orlando Fals Borda', r:'Sentipensante · IAP', c:'"Tocar con la mente lo que ha sido tocado con el corazón."', a:'Fundador de la Investigación-Acción Participativa.' },
+  { n:'Paulo Freire', r:'Pedagogía del Oprimido', c:'"Nadie educa a nadie, nadie se educa a sí mismo."', a:'Educación problematizadora y liberadora.' },
+  { n:'Simón Rodríguez', r:'Maestro de América', c:'"Enseñen y tendrán quien sepa; eduquen y tendrán quien haga."', a:'Educación popular y republicana.' },
+  { n:'Simón Bolívar', r:'El Libertador', c:'"Un pueblo ignorante es un instrumento ciego de su propia destrucción."', a:'Poder Moral como base de la república.' },
+  { n:'Hugo Chávez', r:'Líder bolivariano', c:'"La historia la hacen los pueblos tomando el poder."', a:'Batalla de ideas. Conciencia revolucionaria.' },
+  { n:'Ludovico Silva', r:'Marxismo crítico', c:'"La conciencia revolucionaria es la vocación de lucidez permanente."', a:'Crítica a la ideología. Formación del hombre nuevo.' },
+  { n:'Rigoberto Lanz', r:'Pensador postmoderno crítico', c:'"La crítica no es un adjetivo gracioso."', a:'Producción de saberes desde la condición crítica.' },
+  { n:'Carlos Lanz', r:'INVEDECOR', c:'"Investigar, Educar, Comunicar y Organizar."', a:'Método INVEDECOR. Educación popular.' },
+  { n:'Lola Cendales', r:'Educación Popular', c:'"La educación es una acción emancipadora."', a:'Pedagogía dialógica y práctica política.' },
+  { n:'Boaventura de Sousa Santos', r:'Epistemologías del Sur', c:'"La sociología de las emergencias recupera la igualdad."', a:'Epistemologías del Sur. Crítica al colonialismo.' },
+  { n:'Maritza Montero', r:'Psicología comunitaria', c:'"La IAP busca transformar una situación."', a:'IAP para la liberación e inclusión social.' },
+  { n:'Oscar Jara Holliday', r:'Sistematización', c:'"Aprender críticamente de lo vivido."', a:'Método de sistematización de experiencias.' },
+  { n:'Eduardo Galeano', r:'El Libro de los Abrazos', c:'"Inventaron la palabra sentipensante."', a:'Memoria, poesía y conciencia latinoamericana.' },
+  { n:'Luis Beltrán Prieto Figueroa', r:'Humanismo Democrático', c:'"El liderazgo es una cualidad del papel."', a:'Humanismo democrático. Estado Docente.' },
+  { n:'Gustavo Pereira', r:'Los Somaris', c:'"La poesía como herramienta de transformación social."', a:'Constituyente de 1999. Poesía y cuerpo humano.' },
+  { n:'Luis Bigott', r:'Educación neocolonizada', c:'"Pensamiento alternativo, intercultural."', a:'Crítica a la educación neocolonizada.' },
+  { n:'Van Manen', r:'Fenomenología de la práctica', c:'"La experiencia vivida es más compleja."', a:'Investigación desde la experiencia vivida.' },
+  { n:'Manuel Zabala', r:'La Metódica', c:'"La Metódica es cómo se va asumiendo el conocimiento."', a:'Crítica a la metodología sin método.' },
+  { n:'Luis F. Damiani', r:'Enfoque dialéctico', c:'"El enfoque dialéctico subraya la historicidad de lo social."', a:'Investigación social desde la dialéctica.' },
+  { n:'Ghiso Alfredo', r:'Investigación Comunitaria', c:'"La vida es un hecho cultural."', a:'Investigación comunitaria en alta conflictividad.' }
+];
+function renderReferentes(){
+  const cont = $('#referentGrid');
+  if(!cont || cont.dataset.listo) return;
+  cont.dataset.listo = '1';
+  REFERENTES.forEach(ref=>{
+    const div = document.createElement('div');
+    div.className = 'referent rep-item';
+    div.dataset.keyfield = 'Nombre';
+    div.innerHTML =
+      '<input type="hidden" data-rfield="Nombre" value="' + ref.n.replace(/"/g,'&quot;') + '">' +
+      '<div class="avatar">' + ref.n.charAt(0) + '</div>' +
+      '<h4>' + ref.n + '</h4>' +
+      '<span class="rol">' + ref.r + '</span>' +
+      '<p class="cita">' + ref.c + '</p>' +
+      '<p class="aporte">' + ref.a + '</p>' +
+      '<label style="display:flex;gap:.5rem;align-items:center;margin-top:.7rem;font-size:.8rem;font-weight:600;color:var(--brand)">' +
+        '<input type="checkbox" data-rfield="Afinidad" style="accent-color:var(--brand-2);width:16px;height:16px">' +
+        'Resuena con mi historia</label>' +
+      '<textarea data-rfield="Notas" rows="2" style="margin-top:.5rem;font-size:.82rem"></textarea>';
+    cont.appendChild(div);
+  });
+}
+
+function crearItemFicha(datos){
+  const div = document.createElement('div');
+  div.className = 'rep-item';
+  div.innerHTML =
+    '<button type="button" class="del">Eliminar</button>' +
+    '<div class="rep-title">📖 Ficha académica</div>' +
+    '<div class="grid-2">' +
+      '<label class="field"><span>Autor(es)</span><input type="text" data-rfield="Autor"></label>' +
+      '<label class="field"><span>Título del libro</span><input type="text" data-rfield="Titulo"></label>' +
+      '<label class="field"><span>Editorial</span><input type="text" data-rfield="Editorial"></label>' +
+      '<label class="field"><span>Edición</span><input type="text" data-rfield="Edicion"></label>' +
+      '<label class="field"><span>Año</span><input type="text" data-rfield="Anio"></label>' +
+      '<label class="field"><span>País / Ciudad</span><input type="text" data-rfield="Pais"></label>' +
+      '<label class="field"><span>Páginas</span><input type="text" data-rfield="Paginas"></label>' +
+      '<label class="field"><span>Tema / Línea</span><input type="text" data-rfield="Tema"></label>' +
+    '</div>' +
+    '<label class="field"><span>Idea principal</span><textarea data-rfield="IdeaPrincipal" rows="4"></textarea></label>' +
+    '<label class="field"><span>Citas textuales</span><textarea data-rfield="Citas" rows="4"></textarea></label>' +
+    '<label class="field" style="margin-bottom:0"><span>Comentario / Aporte del investigador(a)</span><textarea data-rfield="Comentario" rows="3"></textarea></label>';
+  const d = datos || {};
+  ['Autor','Titulo','Editorial','Edicion','Anio','Pais','Paginas','Tema','IdeaPrincipal','Citas','Comentario'].forEach(k=>{
+    const el = $('[data-rfield="' + k + '"]', div);
+    if(el && d[k] !== undefined) el.value = d[k];
+  });
+  $('.del', div).addEventListener('click', ()=>{ div.remove(); marcarCambio(); });
+  return div;
+}
+function renderFichasItems(){
+  const cont = $('#repFichas');
+  if(!cont) return;
+  cont.innerHTML = '';
+  const rows = DB.data.Fichas || [];
+  if(!rows.length) cont.appendChild(crearItemFicha({}));
+  else rows.forEach(r => cont.appendChild(crearItemFicha(r)));
+}
+
+function crearItemSaldo(datos){
+  const div = document.createElement('div');
+  div.className = 'rep-item';
+  div.innerHTML =
+    '<button type="button" class="del">Eliminar</button>' +
+    '<div class="grid-2">' +
+      '<label class="field"><span>Activo / Hito</span><input type="text" data-rfield="Activo"></label>' +
+      '<label class="field"><span>Valor asignado</span><input type="text" data-rfield="Valor"></label>' +
+      '<label class="field"><span>Fecha</span><input type="date" data-rfield="Fecha"></label>' +
+      '<label class="field" style="margin-bottom:0"><span>Comentario</span><input type="text" data-rfield="Comentario"></label>' +
+    '</div>';
+  const d = datos || {};
+  $('[data-rfield="Activo"]', div).value = d.Activo || '';
+  $('[data-rfield="Valor"]', div).value = d.Valor || '';
+  $('[data-rfield="Fecha"]', div).value = d.Fecha ? String(d.Fecha).slice(0,10) : hoyISO();
+  $('[data-rfield="Comentario"]', div).value = d.Comentario || '';
+  $('.del', div).addEventListener('click', ()=>{ div.remove(); marcarCambio(); });
+  return div;
+}
+function renderSaldosItems(){
+  const cont = $('#repSaldos');
+  if(!cont) return;
+  cont.innerHTML = '';
+  const rows = DB.data.SaldosFormativos || [];
+  if(!rows.length) cont.appendChild(crearItemSaldo({ Fecha: hoyISO() }));
+  else rows.forEach(r => cont.appendChild(crearItemSaldo(r)));
+}
+
+function contarLlenos(obj){
+  if(!obj) return 0;
+  return Object.keys(obj).filter(k=>{
+    const v = String(obj[k] === undefined || obj[k] === null ? '' : obj[k]).trim();
+    return v && v !== 'No';
+  }).length;
+}
+function renderSaldos(){
+  const d = DB.data;
+  let activos = (d.Respuestas||[]).filter(r => String(r.Respuesta||'').trim()).length;
+  (d.Dimensiones||[]).forEach(r=>{
+    if(r.Seleccionada === 'Sí' || String(r.Reflexion||'').trim()) activos++;
+  });
+  activos += contarLlenos((d.FDPO||[])[0]);
+  activos += contarLlenos((d.DOFA||[])[0]);
+  activos += contarLlenos((d.Sentipensante||[])[0]);
+  activos += contarLlenos((d.Portafolio||[])[0]);
+  let ahorros = (d.SaldosFormativos||[]).filter(r => String(r.Activo||'').trim()).length;
+  ahorros += contarLlenos((d.Actuacion||[])[0]);
+  const relato = ((d.Autobiografia||[])[0] || {}).Relato || '';
+  if(relato.trim()) ahorros += Math.max(1, Math.round(relato.trim().length / 500));
+  let capital = contarLlenos((d.LineasInvestigacion||[])[0]);
+  capital += (d.Dimensiones||[]).filter(r => r.Seleccionada === 'Sí').length;
+  capital += ((d.Autobiografia||[])[0] || {}).TipoBiografia ? 1 : 0;
+  capital += (d.Inspiracionales||[]).filter(r => String(r.Texto||'').trim() || String(r.Notas||'').trim()).length;
+  capital += (d.Fichas||[]).filter(r => String(r.Titulo||'').trim()).length;
+  capital += (d.ConsejoAsesor || []).filter(r => r.Afinidad === 'Sí').length;
+  const total = activos + ahorros + capital;
+  const pct = Math.min(100, Math.round((total / 60) * 100));
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  set('sldActivos', activos); set('sldAhorros', ahorros); set('sldCapital', capital);
+  set('bigActivos', activos); set('bigAhorros', ahorros); set('bigCapital', capital);
+  set('sldTotal', pct + '%');
+  const barra = document.getElementById('sldBarra');
+  if(barra) barra.style.width = pct + '%';
+}
+
+function irA(panelId){
+  $$('.panel').forEach(p => p.classList.toggle('active', p.id === panelId));
+  $$('#nav button').forEach(b => b.classList.toggle('active', b.dataset.go === panelId));
+  window.scrollTo({ top:0, behavior:'smooth' });
+  if(panelId === 'pSaldos'){ renderSaldosItems(); renderSaldos(); }
+  if(panelId === 'p14'){ renderFichasItems(); }
+  if(panelId === 'pGobernanza'){ cargarGobernanza(); }
+}
+
+let cambioTimer = null;
+function marcarCambio(){
+  clearTimeout(cambioTimer);
+  cambioTimer = setTimeout(()=>{
+    const activo = $('.panel.active');
+    if(!activo || !DB.usuario || !DB.usuario.autorizado) return;
+    try{
+      buildJobs(activo.id).forEach(localSave);
+      renderSaldos();
+    }catch(e){}
+  }, 700);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LOGIN · Primera vez y "Ya tengo cuenta"
+   ═══════════════════════════════════════════════════════════════════ */
+async function abrirCuenta(){
+  const nombre = $('#regNombre').value.trim();
+  const email  = $('#regEmail').value.trim();
+  const sede   = $('#regSede').value.trim();
+  const tel    = $('#regTelefono').value.trim();
+  const status = $('#regStatus');
+  if(!nombre){ setStatus(status, 'Escribe tu nombre para registrarte.', 'err'); $('#regNombre').focus(); return; }
+  if(!email || email.indexOf('@') < 0){ setStatus(status, 'Necesitamos un correo válido.', 'err'); $('#regEmail').focus(); return; }
+  const btn = $('#btnAbrirCuenta');
+  btn.disabled = true;
+  setStatus(status, 'Registrando…');
+  const resp = await API.post({ action:'login', nombre, email, sede, telefono: tel });
+  btn.disabled = false;
+  manejarRespuestaLogin(resp, status, { nombre, email, sede });
+}
+
+async function entrarConCorreo(){
+  const email  = $('#regEmailExistente').value.trim();
+  const status = $('#regStatusExistente');
+  if(!email || email.indexOf('@') < 0){ setStatus(status, 'Escribe tu correo electrónico.', 'err'); $('#regEmailExistente').focus(); return; }
+  const btn = $('#btnEntrarCuenta');
+  btn.disabled = true;
+  setStatus(status, 'Buscando tu cuenta…');
+  const resp = await API.post({ action:'login', email });
+  btn.disabled = false;
+  if(resp && resp.ok === false && resp.necesitaRegistro){
+    setStatus(status, resp.error, 'err');
+    toast('No encontramos tu cuenta. Regístrate primero.', true);
+    return;
+  }
+  manejarRespuestaLogin(resp, status, { email });
+}
+
+function manejarRespuestaLogin(resp, status, datosEnviados){
+  let usuario;
+  if(resp && resp.ok && resp.data && resp.data.idUsuario){
+    usuario = {
+      id: resp.data.idUsuario,
+      nombre: resp.data.nombre || datosEnviados.nombre || '',
+      email: resp.data.email || datosEnviados.email || '',
+      sede: resp.data.sede || datosEnviados.sede || '',
+      fechaRegistro: resp.data.fechaRegistro || new Date().toISOString(),
+      rol: resp.data.rol || 'Participante',
+      autorizado: resp.data.autorizado === true,
+      autorizadoPor: resp.data.autorizadoPor || '',
+      fechaSolicitud: resp.data.fechaSolicitud || '',
+      fechaAutorizacion: resp.data.fechaAutorizacion || '',
+      observaciones: resp.data.observaciones || ''
+    };
+  }else if(resp && resp.offline){
+    usuario = {
+      id: uid(),
+      nombre: datosEnviados.nombre || '',
+      email: datosEnviados.email,
+      sede: datosEnviados.sede || '',
+      fechaRegistro: new Date().toISOString(),
+      rol: 'Participante',
+      autorizado: false,
+      autorizadoPor:'', fechaSolicitud:'', fechaAutorizacion:'',
+      observaciones:'Modo local'
+    };
+  }else{
+    setStatus(status, resp && resp.error ? resp.error : 'No se pudo iniciar sesión', 'err');
+    return;
+  }
+
+  DB.usuario = usuario;
+  persistir();
+
+  if(API.url()){
+    API.post({ action:'leer', idUsuario: usuario.id }).then(lectura => {
+      if(lectura && lectura.ok && lectura.data){
+        DB.data = lectura.data;
+        persistir();
+      }
+    });
+  }
+
+  setStatus(status, usuario.autorizado ? '✔ Cuenta autorizada' : '✔ Registro recibido', 'ok');
+  setTimeout(()=>{
+    if(usuario.autorizado) entrarAlDashboard();
+    else mostrarSalaDeEspera();
+  }, 400);
+}
+
+function initModoToggle(){
+  const btnNuevo = $('#btnModoNuevo');
+  const btnExistente = $('#btnModoExistente');
+  const bloqueNuevo = $('#bloqueRegistroNuevo');
+  const bloqueExistente = $('#bloqueAccesoExistente');
+  if(!btnNuevo || !btnExistente) return;
+  btnNuevo.addEventListener('click', ()=>{
+    bloqueNuevo.hidden = false;
+    bloqueExistente.hidden = true;
+    btnNuevo.classList.add('primary'); btnNuevo.classList.remove('ghost');
+    btnExistente.classList.remove('primary'); btnExistente.classList.add('ghost');
+  });
+  btnExistente.addEventListener('click', ()=>{
+    bloqueNuevo.hidden = true;
+    bloqueExistente.hidden = false;
+    btnExistente.classList.add('primary'); btnExistente.classList.remove('ghost');
+    btnNuevo.classList.remove('primary'); btnNuevo.classList.add('ghost');
+    setTimeout(()=> $('#regEmailExistente').focus(), 100);
+  });
+  const emailExistente = $('#regEmailExistente');
+  if(emailExistente){
+    emailExistente.addEventListener('keydown', e=>{ if(e.key === 'Enter') entrarConCorreo(); });
+  }
+}
+
+function entrarAlDashboard(){
+  $('#vistaApertura').hidden = true;
+  $('#salaEspera').hidden = true;
+  $('#vistaDashboard').hidden = false;
+  $('#userChip').hidden = false;
+  $('#userName').textContent = DB.usuario.nombre || DB.usuario.email;
+  const rolEl = $('#userRol');
+  if(rolEl){
+    rolEl.textContent = DB.usuario.rol || 'Participante';
+    rolEl.className = 'rol';
+    if(DB.usuario.rol === 'Presidente') rolEl.classList.add('presidente');
+    if(DB.usuario.rol === 'Gerente') rolEl.classList.add('gerente');
+  }
+  const nEl = $('[data-sheet="Usuarios"][data-field="Nombre"]');
+  const eEl = $('[data-sheet="Usuarios"][data-field="Email"]');
+  if(nEl && !nEl.value) nEl.value = DB.usuario.nombre || '';
+  if(eEl && !eEl.value) eEl.value = DB.usuario.email || '';
+  const esGobernante = (DB.usuario.rol === 'Presidente' || DB.usuario.rol === 'Gerente');
+  $('#navGobernanzaLabel').hidden = !esGobernante;
+  $('#navGobernanzaItem').hidden = !esGobernante;
+  hydrateAll();
+  renderSaldosItems();
+  renderFichasItems();
+  irA('p0');
+}
+
+function mostrarSalaDeEspera(){
+  $('#vistaApertura').hidden = true;
+  $('#vistaDashboard').hidden = true;
+  $('#salaEspera').hidden = false;
+  $('#userChip').hidden = false;
+  $('#userName').textContent = DB.usuario.nombre || DB.usuario.email;
+  const rolEl = $('#userRol');
+  if(rolEl){ rolEl.textContent = DB.usuario.rol || 'Participante'; rolEl.className = 'rol'; }
+  renderSalaEspera();
+}
+
+function renderSalaEspera(){
+  const u = DB.usuario;
+  const cont = $('#salaEsperaContenido');
+  if(!cont) return;
+  const tieneSolicitud = !!u.fechaSolicitud;
+  const pillClass = !tieneSolicitud ? 'pendiente' : 'solicitada';
+  const pillText = !tieneSolicitud ? '⏸ Pendiente de solicitud' : '🟡 En revisión';
+
+  let html = '';
+  html += '<span class="badge">Sala de Espera · Gobernanza</span>';
+  html += '<h1 style="font-family:var(--serif);color:var(--brand);margin-top:.6rem">Bienvenido(a), ' + (u.nombre||'') + '</h1>';
+  html += '<p style="color:var(--muted);max-width:62ch;margin:.6rem auto 1rem">' +
+          'Su cuenta aún no ha sido autorizada para operar en el Banco de Saberes Vivos SENTIPENSAR. ' +
+          'Complete el proceso a continuación.</p>';
+  html += '<div class="estado-pill ' + pillClass + '">' + pillText + '</div>';
+  html += '<div style="text-align:left;margin:1.6rem 0">';
+  html += '<div class="card" style="text-align:left;margin-bottom:1rem">';
+  html += '<h3>Estado de su solicitud</h3>';
+  html += '<div class="kv" style="font-size:.88rem;margin:.4rem 0"><b>Correo:</b> ' + (u.email||'') + '</div>';
+  if(u.sede) html += '<div class="kv" style="font-size:.88rem;margin:.4rem 0"><b>Sede:</b> ' + u.sede + '</div>';
+  html += '<div class="kv" style="font-size:.88rem;margin:.4rem 0"><b>Rol:</b> ' + (u.rol||'Participante') + '</div>';
+  if(!tieneSolicitud){
+    html += '<div class="kv" style="font-size:.88rem;margin:.4rem 0"><b>Estado:</b> <span style="color:var(--warn);font-weight:700">Pendiente de solicitud</span></div>';
+    html += '<p class="hint" style="margin-top:1rem">Debe solicitar la apertura formal de su cuenta para que el Presidente o un Gerente la autoricen.</p>';
+    html += '<button class="btn primary" id="btnSolicitarApertura">📨 Solicitar apertura de mi cuenta</button>';
+  } else {
+    html += '<div class="kv" style="font-size:.88rem;margin:.4rem 0"><b>Solicitada el:</b> ' + fmtFecha(u.fechaSolicitud) + '</div>';
+    html += '<p class="hint" style="margin-top:1rem">Su solicitud está siendo revisada. Vuelva a entrar más tarde para verificar si ha sido autorizada.</p>';
+    html += '<button class="btn ghost" id="btnRefrescarEstado">🔄 Verificar estado</button>';
+  }
+  html += '</div></div>';
+  html += '<p class="frase-guia" style="text-align:left">"El banco abre sus puertas cuando la comunidad reconoce al titular."</p>';
+  cont.innerHTML = html;
+
+  const b1 = $('#btnSolicitarApertura');
+  const b2 = $('#btnRefrescarEstado');
+  if(b1) b1.addEventListener('click', solicitarApertura);
+  if(b2) b2.addEventListener('click', refrescarEstado);
+}
+
+async function solicitarApertura(){
+  const btn = $('#btnSolicitarApertura');
+  if(btn) btn.disabled = true;
+  const resp = await API.post({
+    action:'solicitarApertura',
+    idUsuario: DB.usuario.id,
+    nombre: DB.usuario.nombre,
+    email: DB.usuario.email
+  });
+  if(btn) btn.disabled = false;
+  if(resp && resp.ok){
+    DB.usuario.fechaSolicitud = new Date().toISOString();
+    persistir();
+    renderSalaEspera();
+    toast('Solicitud registrada. El Presidente y los Gerentes fueron notificados.');
+  } else if(resp && resp.offline){
+    DB.usuario.fechaSolicitud = new Date().toISOString();
+    persistir();
+    renderSalaEspera();
+    toast('Solicitud registrada localmente.');
+  } else {
+    toast('No se pudo enviar: ' + (resp && resp.error || 'error'), true);
+  }
+}
+
+async function refrescarEstado(){
+  const resp = await API.post({
+    action:'login',
+    nombre: DB.usuario.nombre,
+    email: DB.usuario.email
+  });
+  if(resp && resp.ok && resp.data){
+    Object.assign(DB.usuario, {
+      rol: resp.data.rol,
+      autorizado: resp.data.autorizado,
+      fechaSolicitud: resp.data.fechaSolicitud,
+      fechaAutorizacion: resp.data.fechaAutorizacion,
+      autorizadoPor: resp.data.autorizadoPor
+    });
+    persistir();
+    if(DB.usuario.autorizado){
+      toast('¡Su cuenta ha sido autorizada!');
+      entrarAlDashboard();
+    } else {
+      renderSalaEspera();
+      toast('Aún no ha sido autorizada.');
+    }
+  } else {
+    toast('No se pudo verificar el estado.', true);
+  }
+}
+
+function salir(){
+  if(!confirm('¿Cerrar sesión? Tus datos quedan guardados en este navegador.')) return;
+  DB.usuario = null;
+  persistir();
+  $('#vistaDashboard').hidden = true;
+  $('#salaEspera').hidden = true;
+  $('#userChip').hidden = true;
+  $('#vistaApertura').hidden = false;
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GOBERNANZA
+   ═══════════════════════════════════════════════════════════════════ */
+async function cargarGobernanza(){
+  if(!DB.usuario) return;
+  if(DB.usuario.rol !== 'Presidente' && DB.usuario.rol !== 'Gerente') return;
+  $('#gobernanzaRol').textContent = DB.usuario.rol;
+
+  let lista = [];
+  if(API.url()){
+    const resp = await API.post({ action:'listarGobernanza', idUsuario: DB.usuario.id });
+    if(!resp || !resp.ok){
+      toast('No se pudo cargar gobernanza: ' + (resp && resp.error || 'error'), true);
+      return;
+    }
+    lista = resp.data || [];
+    const presi = lista.find(u => u.Rol === 'Presidente');
+    if(presi){ DB.presidenteNombre = presi.Nombre || ''; persistir(); }
+  } else {
+    lista = [{ IDUsuario: DB.usuario.id, Nombre: DB.usuario.nombre, Email: DB.usuario.email,
+        Rol: DB.usuario.rol, Autorizado: true, AutorizadoPor:'sistema',
+        FechaSolicitud:'', FechaAutorizacion: DB.usuario.fechaRegistro }];
+  }
+
+  const pendientes = lista.filter(u => !(u.Autorizado === true || String(u.Autorizado).toUpperCase() === 'TRUE'));
+  const autorizados = lista.filter(u => (u.Autorizado === true || String(u.Autorizado).toUpperCase() === 'TRUE'));
+
+  const c1 = $('#gobernanzaPendientes');
+  c1.innerHTML = '';
+  if(!pendientes.length){ c1.innerHTML = '<div class="gov-empty">No hay solicitudes pendientes.</div>'; }
+  else {
+    pendientes.forEach(u=>{
+      const div = document.createElement('div');
+      div.className = 'gov-row';
+      div.innerHTML =
+        '<div class="gov-title">' + (u.Nombre||'—') + ' <span class="gov-rol">' + (u.Rol||'Participante') + '</span></div>' +
+        '<div class="gov-meta"><b>Correo:</b> ' + (u.Email||'—') + '</div>' +
+        (u.FechaSolicitud ? '<div class="gov-meta"><b>Solicitó:</b> ' + fmtFecha(u.FechaSolicitud) + '</div>' : '<div class="gov-meta"><b>Estado:</b> Aún no ha solicitado</div>') +
+        '<div class="gov-actions">' +
+          '<button class="btn primary small" data-accion="autorizar" data-objetivo="' + u.IDUsuario + '" data-nombre="' + (u.Nombre||'') + '">✅ Autorizar</button>' +
+          '<button class="btn danger small" data-accion="revocar" data-objetivo="' + u.IDUsuario + '" data-nombre="' + (u.Nombre||'') + '">❌ Rechazar</button>' +
+        '</div>';
+      c1.appendChild(div);
+    });
+  }
+
+  const c2 = $('#gobernanzaAutorizadas');
+  c2.innerHTML = '';
+  if(!autorizados.length){ c2.innerHTML = '<div class="gov-empty">Aún no hay cuentas autorizadas.</div>'; }
+  else {
+    autorizados.forEach(u=>{
+      const div = document.createElement('div');
+      div.className = 'gov-row';
+      const esPresi = u.Rol === 'Presidente';
+      let rolClass = '';
+      if(esPresi) rolClass = 'presidente';
+      else if(u.Rol === 'Gerente') rolClass = 'gerente';
+      div.innerHTML =
+        '<div class="gov-title">' + (u.Nombre||'—') + ' <span class="gov-rol ' + rolClass + '">' + (u.Rol||'Participante') + '</span></div>' +
+        '<div class="gov-meta"><b>Correo:</b> ' + (u.Email||'—') + '</div>' +
+        '<div class="gov-meta"><b>Autorizado por:</b> ' + (u.AutorizadoPor||'—') + '</div>' +
+        '<div class="gov-meta"><b>Fecha:</b> ' + (u.FechaAutorizacion ? fmtFecha(u.FechaAutorizacion) : '—') + '</div>' +
+        (!esPresi ? '<div class="gov-actions">' +
+          '<button class="btn ghost small" data-accion="revocar" data-objetivo="' + u.IDUsuario + '" data-nombre="' + (u.Nombre||'') + '">🔒 Revocar</button>' +
+        '</div>' : '');
+      c2.appendChild(div);
+    });
+  }
+
+  const esPresidente = DB.usuario.rol === 'Presidente';
+  $('#gobernanzaPresidente').hidden = !esPresidente;
+  if(esPresidente){
+    const c3 = $('#gobernanzaPresidenteAcciones');
+    c3.innerHTML = '';
+    const candidatos = autorizados.filter(u => u.Rol === 'Participante');
+    if(!candidatos.length){ c3.innerHTML = '<div class="gov-empty">No hay participantes autorizados para nombrar como Gerentes.</div>'; }
+    else {
+      candidatos.forEach(u=>{
+        const div = document.createElement('div');
+        div.className = 'gov-row';
+        div.innerHTML =
+          '<div class="gov-title">' + (u.Nombre||'') + '</div>' +
+          '<div class="gov-meta">' + (u.Email||'') + '</div>' +
+          '<div class="gov-actions">' +
+            '<button class="btn gold small" data-accion="nombrarGerente" data-objetivo="' + u.IDUsuario + '" data-nombre="' + (u.Nombre||'') + '">🎩 Nombrar Gerente</button>' +
+          '</div>';
+        c3.appendChild(div);
+      });
+    }
+  }
+
+  $$('#pGobernanza [data-accion]').forEach(b=>{
+    b.addEventListener('click', async ()=>{
+      const accion = b.dataset.accion;
+      const objetivo = b.dataset.objetivo;
+      const nombreObjetivo = b.dataset.nombre || objetivo;
+      if(!confirm('¿Confirma la acción "' + accion + '" sobre ' + nombreObjetivo + '?')) return;
+      b.disabled = true;
+      const r = await API.post({
+        action:'autorizar',
+        idUsuario: DB.usuario.id,
+        idObjetivo: objetivo,
+        accion: accion
+      });
+      b.disabled = false;
+      if(r && r.ok){ toast('Acción aplicada: ' + accion); cargarGobernanza(); }
+      else toast('Error: ' + (r && r.error || 'desconocido'), true);
+    });
+  });
+}
+
+function initGobernanza(){
+  const btn = $('#btnRefrescarGobernanza');
+  if(btn) btn.addEventListener('click', cargarGobernanza);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RETIRO · Estado de Cuenta, PDF, TXT, JSON, Certificado, Súmula, Árbol
+   ═══════════════════════════════════════════════════════════════════ */
+const INSTITUCION = {
+  pais:'República Bolivariana de Venezuela',
+  universidad:'Universidad Nacional Experimental "Simón Rodríguez"',
+  nucleo:'Núcleo Caricuao · Programa de Estudios Abiertos',
+  comunidad:'Comunidad de Aprendizaje "Simón Rodríguez"',
+  concejo:'Concejo del Municipio Bolivariano Libertador de Caracas',
+  lema:'Acredita tu vida. Invierte tu sapiencia.'
+};
+
+function fmtFecha(iso){
+  if(!iso) return '—';
+  try{ return new Date(iso).toLocaleDateString('es-VE', { year:'numeric', month:'long', day:'numeric' }); }
+  catch(e){ return iso; }
+}
+function val(sheet, field){
+  const rows = DB.data[sheet] || [];
+  const r = rows[0] || {};
+  return r[field] !== undefined && String(r[field]).trim() ? String(r[field]).trim() : '';
+}
+function respuestasDe(panelNum){
+  return (DB.data.Respuestas || []).filter(r => String(r.Panel) === String(panelNum));
+}
+function bloqueRespuestas(panelNum){
+  const filas = respuestasDe(panelNum);
+  if(!filas.length) return '<p class="bloque vacio">Sin respuestas registradas aún.</p>';
+  let html = '';
+  filas.forEach(f=>{
+    if(!String(f.Respuesta||'').trim()) return;
+    html += '<h3>' + f.Pregunta + '</h3><div class="bloque">' + String(f.Respuesta).replace(/</g,'&lt;') + '</div>';
+  });
+  return html || '<p class="bloque vacio">Sin respuestas registradas aún.</p>';
+}
+function bloqueRepetidor(sheet, titulo, campoClave, campos){
+  const rows = DB.data[sheet] || [];
+  if(!rows.length) return '<p class="bloque vacio">Sin registros.</p>';
+  let html = '';
+  rows.forEach((r, i)=>{
+    const clave = campoClave ? (r[campoClave] || ('Registro ' + (i+1))) : ('Registro ' + (i+1));
+    html += '<h3>' + clave + '</h3>';
+    campos.forEach(c=>{
+      if(r[c.f] !== undefined && String(r[c.f]).trim()){
+        html += '<div class="kv"><b>' + c.l + ':</b> ' + String(r[c.f]).replace(/</g,'&lt;') + '</div>';
+      }
+    });
+  });
+  return html;
+}
+
+function construirEstadoCuenta(){
+  const u = DB.usuario || { nombre:'—', email:'—', fechaRegistro:new Date().toISOString() };
+  const perfil = { datos: val('Perfil','DatosPersonales'), ocupacion: val('Perfil','Ocupacion'), intereses: val('Perfil','Intereses'), metas: val('Perfil','Metas') };
+  const autobio = { titulo: val('Autobiografia','Titulo'), tipo: val('Autobiografia','TipoBiografia'), relato: val('Autobiografia','Relato') };
+  const actuacion = { coordenadas: val('Actuacion','Coordenadas'), instituciones: val('Actuacion','Instituciones'), actores: val('Actuacion','ActoresClave'), entorno: val('Actuacion','Entorno') };
+  const senti = DB.data.Sentipensante && DB.data.Sentipensante[0] ? DB.data.Sentipensante[0] : {};
+  const fdpo = DB.data.FDPO && DB.data.FDPO[0] ? DB.data.FDPO[0] : {};
+  const dofa = DB.data.DOFA && DB.data.DOFA[0] ? DB.data.DOFA[0] : {};
+  const port = DB.data.Portafolio && DB.data.Portafolio[0] ? DB.data.Portafolio[0] : {};
+  const linea = { linea: val('LineasInvestigacion','Linea'), titulo: val('LineasInvestigacion','Titulo'), vinculacion: val('LineasInvestigacion','Vinculacion') };
+  const activos = document.getElementById('bigActivos')?.textContent || '0';
+  const ahorros = document.getElementById('bigAhorros')?.textContent || '0';
+  const capital = document.getElementById('bigCapital')?.textContent || '0';
+  const pct = document.getElementById('sldTotal')?.textContent || '0%';
+
+  let h = '';
+  h += '<h1>SENTIPENSAR</h1>';
+  h += '<p class="sub">El Banco de Saberes Vivos · ' + INSTITUCION.lema + '</p>';
+  h += '<hr style="border:none;border-top:2px solid var(--gold);margin:1rem 0">';
+  h += '<h2>📋 Estado de Cuenta Autobiográfico</h2>';
+  h += '<div class="kv"><b>Titular:</b> ' + (u.nombre || '—') + '</div>';
+  h += '<div class="kv"><b>Correo:</b> ' + (u.email || '—') + '</div>';
+  if(u.sede) h += '<div class="kv"><b>Sede:</b> ' + u.sede + '</div>';
+  h += '<div class="kv"><b>Rol:</b> ' + (u.rol||'Participante') + '</div>';
+  h += '<div class="kv"><b>Fecha de apertura:</b> ' + fmtFecha(u.fechaRegistro) + '</div>';
+  h += '<div class="kv"><b>Fecha de emisión:</b> ' + fmtFecha(new Date().toISOString()) + '</div>';
+  h += '<div class="kv"><b>Riqueza declarada:</b> ' + pct + ' · Activos: ' + activos + ' · Ahorros: ' + ahorros + ' · Capital: ' + capital + '</div>';
+
+  h += '<h2>🏛️ I. Identidad del Titular</h2>';
+  h += perfil.datos ? '<div class="bloque">' + perfil.datos + '</div>' : '<p class="bloque vacio">Sin datos personales.</p>';
+  if(perfil.ocupacion) h += '<div class="kv"><b>Ocupación:</b> ' + perfil.ocupacion + '</div>';
+  if(perfil.intereses) h += '<div class="kv"><b>Intereses:</b> ' + perfil.intereses + '</div>';
+  if(perfil.metas) h += '<div class="kv"><b>Metas:</b> ' + perfil.metas + '</div>';
+
+  h += '<h2>📖 II. Autobiografía Andragógica</h2>';
+  if(autobio.titulo) h += '<h3>' + autobio.titulo + '</h3>';
+  if(autobio.tipo) h += '<div class="kv"><b>Tipo:</b> ' + autobio.tipo + '</div>';
+  h += autobio.relato ? '<div class="bloque">' + autobio.relato.replace(/</g,'&lt;') + '</div>' : '<p class="bloque vacio">Aún no has escrito tu relato.</p>';
+
+  h += '<h2>🧭 III. Auto-orientación · Cajero de la Memoria</h2>';
+  h += bloqueRespuestas(2);
+  h += '<h2>🔬 IV. Métodos de Deconstrucción</h2>';
+  h += bloqueRespuestas(3);
+  h += '<h2>💎 V. Fondos de Inversión Reflexiva</h2>';
+  h += bloqueRepetidor('Dimensiones','Dimensiones','Dimension',[{f:'Seleccionada',l:'Seleccionada'},{f:'Reflexion',l:'Reflexión'}]);
+  h += '<h2>📊 VI. Revisión y Balance</h2>';
+  h += bloqueRespuestas(5);
+  h += '<h2>❤️ VII. Enfoque Sentipensante</h2>';
+  ['Inteligencia','Recuerdo','Memoria','Emocion','Voluntad','Sentir','Afectividad','Reflexion'].forEach(k=>{
+    if(senti[k] && String(senti[k]).trim()){
+      h += '<h3>' + k + '</h3><div class="bloque">' + String(senti[k]).replace(/</g,'&lt;') + '</div>';
+    }
+  });
+  h += '<h2>📍 VIII. Contexto de Actuación</h2>';
+  if(actuacion.coordenadas) h += '<div class="kv"><b>Coordenadas:</b> ' + actuacion.coordenadas + '</div>';
+  if(actuacion.instituciones) h += '<div class="kv"><b>Instituciones:</b> ' + actuacion.instituciones + '</div>';
+  if(actuacion.actores) h += '<div class="kv"><b>Actores clave:</b> ' + actuacion.actores + '</div>';
+  if(actuacion.entorno) h += '<div class="kv"><b>Entorno:</b> ' + actuacion.entorno + '</div>';
+  h += '<h2>🧮 IX. Auditoría FDPO · DOFA</h2>';
+  if(fdpo.Fuente) h += '<h3>Fuente</h3><div class="bloque">' + fdpo.Fuente + '</div>';
+  if(fdpo.Desarrollo) h += '<h3>Desarrollo</h3><div class="bloque">' + fdpo.Desarrollo + '</div>';
+  if(fdpo.Planimetria) h += '<h3>Planimetría</h3><div class="bloque">' + fdpo.Planimetria + '</div>';
+  if(fdpo.Objetivo) h += '<h3>Objetivo</h3><div class="bloque">' + fdpo.Objetivo + '</div>';
+  ['Fortalezas','Oportunidades','Debilidades','Amenazas','Estrategias','DecisionesFuturas'].forEach(k=>{
+    if(dofa[k] && String(dofa[k]).trim()){
+      h += '<h3>' + k + '</h3><div class="bloque">' + String(dofa[k]).replace(/</g,'&lt;') + '</div>';
+    }
+  });
+  h += '<h2>🎯 X. Línea de Investigación y Título</h2>';
+  if(linea.linea) h += '<div class="kv"><b>Línea:</b> ' + linea.linea + '</div>';
+  if(linea.titulo) h += '<div class="kv"><b>Título al que aspira:</b> ' + linea.titulo + '</div>';
+  if(linea.vinculacion) h += '<div class="bloque">' + linea.vinculacion + '</div>';
+  h += '<h2>🗣️ XI. Acto de Empalabramiento</h2>';
+  h += bloqueRespuestas(10);
+  h += '<h2>🏛️ XII. Bóveda del Portafolio</h2>';
+  ['Experiencia','Reflexion','Evidencias','Organizacion'].forEach(k=>{
+    if(port[k] && String(port[k]).trim()){
+      h += '<h3>' + k + '</h3><div class="bloque">' + String(port[k]).replace(/</g,'&lt;') + '</div>';
+    }
+  });
+  h += '<h2>📚 XIII. Fichas Académicas</h2>';
+  h += bloqueRepetidor('Fichas','Fichas','Titulo',[
+    {f:'Autor',l:'Autor'},{f:'Titulo',l:'Título'},{f:'Editorial',l:'Editorial'},{f:'Anio',l:'Año'},
+    {f:'IdeaPrincipal',l:'Idea principal'},{f:'Citas',l:'Citas'},{f:'Comentario',l:'Comentario del investigador(a)'}
+  ]);
+  h += '<h2>💠 XIV. Hitos y Activos Declarados</h2>';
+  h += bloqueRepetidor('SaldosFormativos','Saldos Formativos','Activo',[
+    {f:'Activo',l:'Activo'},{f:'Valor',l:'Valor'},{f:'Fecha',l:'Fecha'},{f:'Comentario',l:'Comentario'}
+  ]);
+  h += selloPresidencialHTML();
+  h += '<div class="firma">';
+  h += '<b>' + INSTITUCION.universidad + '</b><br>';
+  h += INSTITUCION.nucleo + '<br>';
+  h += INSTITUCION.comunidad + '<br>';
+  h += INSTITUCION.concejo + '<br><br>';
+  h += 'Emitido el ' + fmtFecha(new Date().toISOString());
+  h += '</div>';
+  return h;
+}
+
+function selloPresidencialHTML(){
+  const nombrePresi = DB.presidenteNombre || 'Presidencia SENTIPENSAR';
+  return '<div class="sello-presidencial">' +
+    '<div class="sello-sup">SENTIPENSAR</div>' +
+    '<div class="sello-icon">✦</div>' +
+    '<div class="sello-mid">PRESIDENCIA</div>' +
+    '<div class="sello-nom">' + nombrePresi + '</div>' +
+    '<div class="sello-fec">' + new Date().getFullYear() + '</div>' +
+  '</div>';
+}
+
+function verEstadoCuenta(){
+  const cont = $('#retiroPreview');
+  cont.innerHTML = construirEstadoCuenta();
+  setStatus($('#retiroStatus'), '✔ Estado de cuenta generado', 'ok');
+  $('#hintPreview').textContent = 'Estado de Cuenta generado. Puedes imprimirlo, descargarlo como TXT o exportarlo como JSON.';
+}
+
+function imprimirEstadoCuenta(){
+  const contenido = construirEstadoCuenta();
+  const css = `
+    body{font-family:Georgia,'Times New Roman',serif;color:#1e2a32;line-height:1.7;padding:2.5cm 2cm;max-width:21cm;margin:auto;font-size:11.5pt}
+    h1{font-size:22pt;text-align:center;color:#0f4c5c;margin:0 0 .3rem}
+    h2{font-size:14pt;color:#0f4c5c;margin:1.6rem 0 .5rem;padding-bottom:.3rem;border-bottom:1.5px solid #c9a227;page-break-after:avoid}
+    h3{font-size:12pt;color:#1b7a8c;margin:1rem 0 .3rem;page-break-after:avoid}
+    .sub{font-family:Arial,sans-serif;font-size:9.5pt;color:#5f6f7c;text-align:center;font-style:italic;margin-bottom:1rem}
+    .kv{font-family:Arial,sans-serif;font-size:10pt;margin:.25rem 0}
+    .kv b{color:#0f4c5c}
+    .bloque{background:#fbfaf6;border-left:3px solid #2fa3a3;padding:.6rem .9rem;margin:.5rem 0;font-family:Arial,sans-serif;font-size:10.5pt;white-space:pre-wrap;line-height:1.55;page-break-inside:avoid}
+    .bloque.vacio{border-left-color:#e4ddd0;color:#5f6f7c;font-style:italic}
+    .sello-presidencial{border:3px double #c9a227;border-radius:50%;width:140px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#c9a227;transform:rotate(-8deg);margin:1rem auto;padding:8px}
+    .sello-presidencial .sello-sup{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+    .sello-presidencial .sello-mid{font-size:.82rem;font-weight:700;margin:.2rem 0}
+    .sello-presidencial .sello-nom{font-size:.58rem;font-style:italic;color:#0f4c5c}
+    .sello-presidencial .sello-fec{font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+    .firma{margin-top:2rem;text-align:center;font-family:Arial,sans-serif;font-size:9pt;color:#5f6f7c;border-top:1px solid #e4ddd0;padding-top:1rem}
+    hr{border:none;border-top:2px solid #c9a227;margin:1rem 0}
+    @page{margin:1.5cm}
+  `;
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if(!w){ toast('Permite las ventanas emergentes para imprimir.', true); return; }
+  w.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>SENTIPENSAR · Estado de Cuenta</title><style>' + css + '</style></head><body>' + contenido + '</body></html>');
+  w.document.close();
+  setTimeout(()=>{ w.focus(); w.print(); }, 400);
+}
+
+function descargarTXT(){
+  const preview = document.getElementById('retiroPreview');
+  const texto = (preview.innerText || '').trim();
+  if(!texto || texto.indexOf('Aún no has generado') === 0){
+    toast('Primero genera el Estado de Cuenta.', true); return;
+  }
+  const nombre = 'SENTIPENSAR_Estado_de_Cuenta_' + (DB.usuario?.nombre || 'participante').replace(/\s+/g,'_') + '_' + hoyISO() + '.txt';
+  const blob = new Blob(['\uFEFF' + texto], { type:'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre; a.click();
+  URL.revokeObjectURL(url);
+  setStatus($('#retiroStatus'), '✔ TXT descargado: ' + nombre, 'ok');
+  toast('Retiro en TXT realizado.');
+}
+
+function descargarJSON(){
+  const payload = {
+    meta:{ sistema:'SENTIPENSAR · El Banco de Saberes Vivos', version:'1.0', institucion:INSTITUCION, fechaEmision:new Date().toISOString() },
+    usuario: DB.usuario, data: DB.data
+  };
+  const nombre = 'SENTIPENSAR_Respaldo_' + (DB.usuario?.nombre || 'participante').replace(/\s+/g,'_') + '_' + hoyISO() + '.json';
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre; a.click();
+  URL.revokeObjectURL(url);
+  setStatus($('#retiroStatus'), '✔ Respaldo JSON descargado', 'ok');
+  toast('Respaldo completo descargado.');
+}
+
+function generarCertificado(){
+  const u = DB.usuario || { nombre:'—', email:'—' };
+  const pct = document.getElementById('sldTotal')?.textContent || '0%';
+  const activos = document.getElementById('bigActivos')?.textContent || '0';
+  const ahorros = document.getElementById('bigAhorros')?.textContent || '0';
+  const capital = document.getElementById('bigCapital')?.textContent || '0';
+  const linea = val('LineasInvestigacion','Linea') || 'Investigación Autobiográfica';
+  const titulo = val('LineasInvestigacion','Titulo') || 'Título por definir';
+  const tituloAuto = val('Autobiografia','Titulo') || 'Autobiografía sin título';
+  const tipoBio = val('Autobiografia','TipoBiografia') || 'Autobiografía Andragógica';
+  const folio = 'SP-' + Date.now().toString(36).toUpperCase();
+  const fechaLarga = fmtFecha(new Date().toISOString());
+  const nombrePresi = DB.presidenteNombre || 'Presidencia SENTIPENSAR';
+
+  const css = `
+    @page{size:A4 landscape;margin:0}
+    body{margin:0;font-family:Georgia,'Times New Roman',serif;color:#1e2a32;background:#f6f3ec;height:100vh;display:flex;align-items:center;justify-content:center;padding:1cm}
+    .cert{background:#fff;width:100%;max-width:29.7cm;padding:1.2cm 1.6cm;border:8px double #0f4c5c;position:relative;box-shadow:0 8px 32px rgba(15,76,92,.15)}
+    .cert::before{content:"";position:absolute;inset:14px;border:1px solid #c9a227;pointer-events:none}
+    .head{text-align:center;margin-bottom:.8rem}
+    .head .pais{font-family:Arial,sans-serif;font-size:9pt;letter-spacing:.2em;text-transform:uppercase;color:#5f6f7c}
+    .head h1{font-size:22pt;color:#0f4c5c;margin:.3rem 0 .1rem}
+    .head .univ{font-size:11pt;color:#1b7a8c;margin:0}
+    .head .nucleo{font-family:Arial,sans-serif;font-size:9.5pt;color:#5f6f7c;margin-top:.2rem}
+    .divisor{border:none;border-top:2px solid #c9a227;margin:.8rem 0;width:60%;margin-left:auto;margin-right:auto}
+    .cuerpo{text-align:center;padding:.4rem 1rem}
+    .cuerpo .otorga{font-family:Arial,sans-serif;font-size:10pt;letter-spacing:.18em;text-transform:uppercase;color:#5f6f7c;margin-bottom:.4rem}
+    .cuerpo h2{font-size:24pt;color:#0f4c5c;margin:.3rem 0}
+    .cuerpo .cc{font-family:Arial,sans-serif;font-size:10.5pt;color:#5f6f7c;margin:.2rem 0 .8rem}
+    .cuerpo p{font-size:11pt;line-height:1.65;margin:.6rem 0;text-align:justify;padding:0 1.4rem}
+    .datos{display:flex;justify-content:space-around;margin:1rem 0;flex-wrap:wrap;gap:1rem}
+    .datos .d{text-align:center}
+    .datos .d b{display:block;font-size:15pt;color:#0f4c5c}
+    .datos .d span{font-family:Arial,sans-serif;font-size:8.5pt;color:#5f6f7c;text-transform:uppercase;letter-spacing:.12em}
+    .firmas{display:flex;justify-content:space-around;margin-top:1.6rem;gap:1rem;flex-wrap:wrap;align-items:flex-end}
+    .firmas .f{text-align:center;min-width:170px;flex:1}
+    .firmas .f .linea{border-top:1px solid #1e2a32;margin-bottom:.3rem;height:34px}
+    .firmas .f b{font-family:Arial,sans-serif;font-size:9.5pt;color:#0f4c5c;display:block}
+    .firmas .f span{font-family:Arial,sans-serif;font-size:8pt;color:#5f6f7c}
+    .sello-presidencial{width:120px;height:120px;border:3px double #c9a227;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#c9a227;transform:rotate(-9deg);margin:0 auto;padding:6px;position:relative}
+    .sello-presidencial::before{content:"";position:absolute;inset:6px;border:1px solid #c9a227;border-radius:50%;opacity:.55}
+    .sello-presidencial .sello-sup{font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+    .sello-presidencial .sello-mid{font-size:.75rem;font-weight:700;margin:.15rem 0}
+    .sello-presidencial .sello-nom{font-size:.52rem;font-style:italic;color:#0f4c5c;max-width:100px}
+    .sello-presidencial .sello-fec{font-size:.45rem;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+    .folio{position:absolute;left:1.6cm;bottom:1.4cm;font-family:Arial,sans-serif;font-size:8.5pt;color:#5f6f7c}
+    .folio b{color:#0f4c5c}
+  `;
+
+  const html =
+    '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Certificado · SENTIPENSAR</title><style>' + css + '</style></head><body>' +
+    '<div class="cert">' +
+      '<div class="head">' +
+        '<div class="pais">' + INSTITUCION.pais + '</div>' +
+        '<h1>SENTIPENSAR</h1>' +
+        '<p class="univ">' + INSTITUCION.universidad + '</p>' +
+        '<p class="nucleo">' + INSTITUCION.nucleo + ' · ' + INSTITUCION.comunidad + '</p>' +
+      '</div>' +
+      '<hr class="divisor">' +
+      '<div class="cuerpo">' +
+        '<div class="otorga">Certificado de Acreditación de Saberes Vivos</div>' +
+        '<h2>' + (u.nombre || '—') + '</h2>' +
+        '<p class="cc">' + (u.email || '') + '</p>' +
+        '<p>En reconocimiento a su trayectoria vital, profesional y formativa, consignada en el <b>Banco de Saberes Vivos SENTIPENSAR</b> bajo la modalidad de <b>' + tipoBio + '</b>, se certifica la acreditación de su <b>Autobiografía Andragógica</b> titulada <i>"' + tituloAuto + '"</i> y de su <b>Portafolio de Saberes</b>, vinculados a la línea de investigación <b>' + linea + '</b>, en procura del título <b>' + titulo + '</b>.</p>' +
+        '<p>Se reconoce así la deconstrucción rigurosa de su experiencia, el empalabramiento sentipensante de su historia y la inversión consciente de su economía intelectual, conforme a los referentes ontoepistemológicos de la Educación Popular Latinoamericana y la Investigación-Acción Participativa.</p>' +
+      '</div>' +
+      '<div class="datos">' +
+        '<div class="d"><b>' + activos + '</b><span>Activos de Conocimiento</span></div>' +
+        '<div class="d"><b>' + ahorros + '</b><span>Ahorros de Experiencia</span></div>' +
+        '<div class="d"><b>' + capital + '</b><span>Capital de Competencias</span></div>' +
+        '<div class="d"><b>' + pct + '</b><span>Riqueza Declarada</span></div>' +
+      '</div>' +
+      '<div class="firmas">' +
+        '<div class="f"><div class="linea"></div><b>Facilitador(a)</b><span>Comunidad de Aprendizaje</span></div>' +
+        '<div class="f" style="max-width:170px">' +
+          '<div class="sello-presidencial">' +
+            '<div class="sello-sup">SENTIPENSAR</div>' +
+            '<div>✦</div>' +
+            '<div class="sello-mid">PRESIDENCIA</div>' +
+            '<div class="sello-nom">' + nombrePresi + '</div>' +
+            '<div class="sello-fec">' + new Date().getFullYear() + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="f"><div class="linea"></div><b>El/La Titular</b><span>Autor(a) de su propia obra</span></div>' +
+      '</div>' +
+      '<div class="folio">Folio: <b>' + folio + '</b><br>Emitido el ' + fechaLarga + '</div>' +
+    '</div>' +
+    '</body></html>';
+
+  const w = window.open('', '_blank', 'width=1100,height=800');
+  if(!w){ toast('Permite las ventanas emergentes para el certificado.', true); return; }
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>{ w.focus(); w.print(); }, 500);
+  setStatus($('#retiroStatus'), '✔ Certificado generado · Folio ' + folio, 'ok');
+  toast('Certificado emitido. Folio: ' + folio);
+}
+
+/* SÚMULA NARRADA */
+function limpiarParaNarracion(txt){
+  if(!txt) return '';
+  let t = String(txt);
+  t = t.replace(/\u00A0/g,' ').replace(/\u200B/g,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  t = t.replace(/\n{3,}/g,'\n\n').replace(/[ \t]{2,}/g,' ');
+  t = t.replace(/[""]/g,'"').replace(/['']/g,"'");
+  return t.trim();
+}
+function narrarEnFrases(txt){
+  if(!txt) return '';
+  let t = limpiarParaNarracion(txt);
+  t = t.replace(/\.\s+/g, '. ');
+  t = t.replace(/;\s+/g, '. ');
+  t = t.replace(/:\s+/g, '... ');
+  return t;
+}
+function construirSumula(){
+  const u = DB.usuario || { nombre:'—', email:'—', fechaRegistro:new Date().toISOString() };
+  const nombre = u.nombre || 'Titular';
+  const pct = document.getElementById('sldTotal')?.textContent || '0%';
+  const activos = document.getElementById('bigActivos')?.textContent || '0';
+  const ahorros = document.getElementById('bigAhorros')?.textContent || '0';
+  const capital = document.getElementById('bigCapital')?.textContent || '0';
+  const tipoBio = val('Autobiografia','TipoBiografia') || 'Autobiografía Andragógica';
+  const tituloAuto = val('Autobiografia','Titulo') || 'sin título';
+  const linea = val('LineasInvestigacion','Linea') || 'Investigación Autobiográfica';
+  const titulo = val('LineasInvestigacion','Titulo') || 'Título por definir';
+  const relato = val('Autobiografia','Relato');
+  const datos = val('Perfil','DatosPersonales');
+  const ocupacion = val('Perfil','Ocupacion');
+  const intereses = val('Perfil','Intereses');
+  const metas = val('Perfil','Metas');
+  const senti = DB.data.Sentipensante && DB.data.Sentipensante[0] ? DB.data.Sentipensante[0] : {};
+  const actuacion = { coordenadas: val('Actuacion','Coordenadas'), instituciones: val('Actuacion','Instituciones'), actores: val('Actuacion','ActoresClave'), entorno: val('Actuacion','Entorno') };
+  const fdpo = DB.data.FDPO && DB.data.FDPO[0] ? DB.data.FDPO[0] : {};
+  const dofa = DB.data.DOFA && DB.data.DOFA[0] ? DB.data.DOFA[0] : {};
+  const port = DB.data.Portafolio && DB.data.Portafolio[0] ? DB.data.Portafolio[0] : {};
+  const dims = DB.data.Dimensiones || [];
+  const fichas = DB.data.Fichas || [];
+  const hitos = DB.data.SaldosFormativos || [];
+
+  let s = '';
+  s += '# SENTIPENSAR — Autobiografía Narrada de ' + nombre + '\n\n';
+  s += '## Presentación\n\n';
+  s += 'Este es el relato narrado de una vida. Una vida que se ha convertido en conocimiento. Una vida que se ha vuelto portafolio.\n\n';
+  s += 'SENTIPENSAR, el Banco de Saberes Vivos, presenta la Súmula Narrada de ' + nombre + '. Un compendio oral de su trayectoria formativa, profesional y vital.\n\n';
+  s += 'Aquí la palabra se hace voz. La experiencia se hace relato. Y el relato, se hace acreditación.\n\n';
+  s += 'Escuchemos.\n\n';
+
+  s += '## Sobre el/la autor(a)\n\n';
+  s += 'El titular de esta cuenta se llama ' + nombre + '.\n\n';
+  if(ocupacion) s += 'Hoy se desempeña como ' + ocupacion + '.\n\n';
+  if(datos) s += narrarEnFrases(datos) + '\n\n';
+  if(intereses) s += 'Sus intereses y campos de trabajo son... ' + intereses + '.\n\n';
+  if(metas) s += 'Sus metas formativas son claras. Escuchemos... ' + narrarEnFrases(metas) + '\n\n';
+  s += 'La cuenta fue abierta el ' + fmtFecha(u.fechaRegistro) + '.\n\n';
+
+  s += '## Introducción\n\n';
+  s += 'Este no es un texto cualquiera.\n\n';
+  s += 'Es un acto de auto-reconocimiento. Es una apuesta por la memoria viva. Es un ejercicio sentipensante.\n\n';
+  s += 'La autobiografía no es un adorno. Es una episteme. Es una forma de investigar. Es una forma de producir conocimiento.\n\n';
+  s += 'Como dijo Eduardo Galeano... "La educación nos descuartiza. Nos enseña a divorciar el alma del cuerpo, y la razón del corazón."\n\n';
+  s += 'Pero hoy, aquí, la razón y el corazón se reconcilian.\n\n';
+  s += 'Aprendamos a tocar con la mente lo que ha sido tocado con el corazón.\n\n';
+
+  s += '### Capítulo I. Identidad y Origen\n\n';
+  s += 'Toda historia comienza en algún lugar. Y en algún tiempo.\n\n';
+  s += 'La titular de esta cuenta se llama ' + nombre + '.\n\n';
+  if(datos) s += narrarEnFrases(datos) + '\n\n';
+  else s += 'Su historia aún espera ser contada en este capítulo.\n\n';
+  if(ocupacion) s += 'Hoy su trabajo y su quehacer se enmarcan en... ' + ocupacion + '.\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- El nombre propio es el primer saber acreditado.\n- El origen no es un dato: es una raíz.\n- Toda identidad es también una trayectoria.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Me llamo ' + nombre + ' y esta es mi historia."\n';
+  s += '2. "El origen no se elige, pero sí se narra."\n';
+  s += '3. "Antes de acreditar saberes, hay que reconocer raíces."\n\n';
+
+  s += '### Capítulo II. Autobiografía Andragógica\n\n';
+  s += 'El tipo de relato escogido es... ' + tipoBio + '.\n\n';
+  s += 'El título de esta autobiografía es... "' + tituloAuto + '".\n\n';
+  if(relato){
+    s += 'Y así comienza el relato personal.\n\n';
+    s += narrarEnFrases(relato) + '\n\n';
+  } else {
+    s += 'El relato personal aún espera su escritura. Aquí se abre el espacio de la memoria.\n\n';
+  }
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- La autobiografía es un método, no un adorno.\n- El tipo de relato orienta toda la investigación.\n- Cada vida, narrada con rigor, se vuelve episteme.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Investigo mi experiencia para generar conocimiento."\n';
+  s += '2. "La vida se vuelve currículo cuando se narra con conciencia."\n';
+  s += '3. "Mi voz es mi método."\n\n';
+
+  const resp2 = respuestasDe(2);
+  s += '### Capítulo III. Auto-orientación. El Cajero de la Memoria\n\n';
+  s += 'Estas son las preguntas desencadenantes. Las que abren la caja fuerte de la memoria.\n\n';
+  if(resp2.length){
+    resp2.forEach(r=>{
+      if(!String(r.Respuesta||'').trim()) return;
+      s += r.Pregunta + '\n\n';
+      s += narrarEnFrases(r.Respuesta) + '\n\n';
+    });
+  } else s += 'Las preguntas aún esperan respuesta.\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- Preguntar es abrir. Responder es construir.\n- La memoria no es pasado: es material vivo.\n- Los niveles de conciencia van de lo personal a lo mundial.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "¿Quién soy más allá del nombre y el oficio?"\n';
+  s += '2. "Cada pregunta es una caja fuerte que se abre."\n';
+  s += '3. "Recordar es volver a conocer."\n\n';
+
+  const resp3 = respuestasDe(3);
+  s += '### Capítulo IV. Métodos de Deconstrucción\n\n';
+  s += 'La deconstrucción de la experiencia es el método principal. Investigar la propia experiencia para generar conocimiento.\n\n';
+  if(resp3.length){
+    resp3.forEach(r=>{
+      if(!String(r.Respuesta||'').trim()) return;
+      s += r.Pregunta + '\n\n';
+      s += narrarEnFrases(r.Respuesta) + '\n\n';
+    });
+  }
+  s += 'Las características del método son cinco. Es creativa. Es contextualizadora. Es constructor. Es empoderador. Y es empalabrador.\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- El método reconoce, imagina, posibilita e inventa.\n- Contextualiza: dónde, cuándo, quiénes y cómo.\n- Empodera y empalabra al autor.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Investigo mi vida para transformar mi práctica."\n';
+  s += '2. "El método no se aplica: se encarna."\n';
+  s += '3. "Deconstruir es liberar."\n\n';
+
+  s += '### Capítulo V. Fondos de Inversión Reflexiva\n\n';
+  s += 'Estas son las dimensiones de la reflexión. Cada una es un filtro por el que se pasa la experiencia para convertirla en conocimiento.\n\n';
+  if(dims.length){
+    dims.forEach(d=>{
+      if(d.Selected === 'Sí' || String(d.Reflexion||'').trim()){
+        s += d.Dimension + '\n\n';
+        if(String(d.Reflexion||'').trim()) s += narrarEnFrases(d.Reflexion) + '\n\n';
+      }
+    });
+  } else s += 'Las dimensiones aún no han sido trabajadas.\n\n';
+  s += 'Lo ontológico pregunta por el ser. Lo epistemológico por el conocer. Lo axiológico por el valor.\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- Reflexionar es pasar la experiencia por filtros filosóficos.\n- Lo ontológico, lo epistemológico y lo axiológico son los tres pilares.\n- La reflexión convierte vivencia en saber.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "¿Quién soy? ¿Cómo conozco? ¿Qué valoro?"\n';
+  s += '2. "La reflexión es el acto más radical del pensamiento."\n';
+  s += '3. "Conocer es también reconocerse."\n\n';
+
+  const resp5 = respuestasDe(5);
+  s += '### Capítulo VI. Revisión y Balance\n\n';
+  s += 'Revisar el pasado no es quedarse en él. Es reconocer lo ya conquistado.\n\n';
+  if(resp5.length){
+    resp5.forEach(r=>{
+      if(!String(r.Respuesta||'').trim()) return;
+      s += r.Pregunta + '\n\n';
+      s += narrarEnFrases(r.Respuesta) + '\n\n';
+    });
+  }
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- Revisar es reconocer.\n- El pasado es material, no condena.\n- Mirar atrás para saber hacia dónde ir.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Reviso mi pasado para iluminar mi presente."\n';
+  s += '2. "Quien no revisa, repite."\n';
+  s += '3. "El balance no cierra la cuenta: la proyecta."\n\n';
+
+  s += '### Capítulo VII. Enfoque Sentipensante\n\n';
+  s += 'Este es el corazón del método. Y nunca mejor dicho.\n\n';
+  s += 'Sentipensar es tocar con la mente lo que ha sido tocado con el corazón.\n\n';
+  const sentiCampos = [['Inteligencia','la inteligencia'],['Recuerdo','el recuerdo'],['Memoria','la memoria'],['Emocion','la emoción'],['Voluntad','la voluntad'],['Sentir','el sentir'],['Afectividad','la afectividad']];
+  sentiCampos.forEach(([k,l])=>{
+    if(senti[k] && String(senti[k]).trim()){
+      s += 'Sobre ' + l + '...\n\n';
+      s += narrarEnFrases(senti[k]) + '\n\n';
+    }
+  });
+  if(senti.Reflexion && String(senti.Reflexion).trim()){
+    s += 'Y la reflexión integradora es esta...\n\n';
+    s += narrarEnFrases(senti.Reflexion) + '\n\n';
+  }
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- La inteligencia, el recuerdo, la memoria y la voluntad se reconocen e integran.\n- Los talentos humanos, espirituales y afectivos tienen valor de uso.\n- Sentipensar es la forma más alta de conocer.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Toco con la mente lo que ha sido tocado con el corazón."\n';
+  s += '2. "La razón sin corazón es fría. El corazón sin razón es ciego."\n';
+  s += '3. "Sentipensar es el lenguaje que dice la verdad."\n\n';
+
+  s += '### Capítulo VIII. Contexto de Actuación\n\n';
+  s += 'Un inventario sin contexto es solo una lista. Toda historia tiene coordenadas, instituciones, actores y entorno.\n\n';
+  if(actuacion.coordenadas) s += 'Las coordenadas son estas... ' + narrarEnFrases(actuacion.coordenadas) + '\n\n';
+  if(actuacion.instituciones) s += 'Las instituciones donde transcurrió la experiencia son... ' + narrarEnFrases(actuacion.instituciones) + '\n\n';
+  if(actuacion.actores) s += 'Los actores clave... ' + narrarEnFrases(actuacion.actores) + '\n\n';
+  if(actuacion.entorno) s += 'Y el entorno era así... ' + narrarEnFrases(actuacion.entorno) + '\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- Sin contexto no hay historia, solo anécdota.\n- Coordenadas, instituciones y actores dan densidad al relato.\n- El entorno es también parte del aprendizaje.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Dime dónde y cuándo, y te diré qué aprendí."\n';
+  s += '2. "El lugar también enseña."\n';
+  s += '3. "Contextualizar es hacer justicia a la memoria."\n\n';
+
+  s += '### Capítulo IX. Auditoría FDPO y DOFA\n\n';
+  s += 'Estas son las herramientas de estructura y autoevaluación.\n\n';
+  if(fdpo.Fuente) s += 'La fuente de los datos... ' + narrarEnFrases(fdpo.Fuente) + '\n\n';
+  if(fdpo.Desarrollo) s += 'El desarrollo, los temas y su codificación... ' + narrarEnFrases(fdpo.Desarrollo) + '\n\n';
+  if(fdpo.Planimetria) s += 'La planimetría, la arquitectura del proyecto... ' + narrarEnFrases(fdpo.Planimetria) + '\n\n';
+  if(fdpo.Objetivo) s += 'El objetivo, el producto final... ' + narrarEnFrases(fdpo.Objetivo) + '\n\n';
+  ['Fortalezas','Oportunidades','Debilidades','Amenazas','Estrategias','DecisionesFuturas'].forEach(k=>{
+    if(dofa[k] && String(dofa[k]).trim()){
+      s += 'Sobre las ' + k.toLowerCase() + '...\n\n';
+      s += narrarEnFrases(dofa[k]) + '\n\n';
+    }
+  });
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- El FDPO estructura el autoaprendizaje.\n- La DOFA permite autoevaluarse con honestidad.\n- No es un requisito que se agota al titularse: es una estrategia vital.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Auditar mi vida es también honrarla."\n';
+  s += '2. "La DOFA no cierra: proyecta."\n';
+  s += '3. "Reconocer debilidades es el primer paso para superarlas."\n\n';
+
+  s += '### Capítulo X. Línea de Investigación y Título\n\n';
+  s += 'El inventario de saberes se vincula con la línea de investigación y con el título al que se aspira.\n\n';
+  s += 'La línea escogida es... ' + linea + '.\n\n';
+  s += 'El título al que se aspira es... ' + titulo + '.\n\n';
+  if(val('LineasInvestigacion','Vinculacion')){
+    s += 'Y así se vincula el inventario con la línea...\n\n';
+    s += narrarEnFrases(val('LineasInvestigacion','Vinculacion')) + '\n\n';
+  }
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- El inventario de saberes no flota: se ancla en una línea y un título.\n- La línea de investigación es la comunidad epistémica del autor.\n- El título es un horizonte, no una meta vacía.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Investigo desde una línea, hacia un título."\n';
+  s += '2. "Mi saber tiene rumbo."\n';
+  s += '3. "La línea me sitúa; el título me proyecta."\n\n';
+
+  const resp10 = respuestasDe(10);
+  s += '### Capítulo XI. Acto de Empalabramiento\n\n';
+  s += 'El empalabramiento es la consecución histórica, contextualizada, sistemática, reflexiva y rigurosa del relato.\n\n';
+  if(resp10.length){
+    resp10.forEach(r=>{
+      if(!String(r.Respuesta||'').trim()) return;
+      s += r.Pregunta + '\n\n';
+      s += narrarEnFrases(r.Respuesta) + '\n\n';
+    });
+  }
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- El empalabramiento es el acto final de la investigación autobiográfica.\n- La investigación es sentipensante, académica, argumentada y conclusiva.\n- Empalabrar es dar voz a la propia obra.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Mi investigación es sentipensante."\n';
+  s += '2. "Empalabro mi vida en primera persona."\n';
+  s += '3. "Mi voz es mi firma."\n\n';
+
+  s += '### Capítulo XII. Bóveda del Portafolio\n\n';
+  s += 'El portafolio es el Documento Rector que valida todo el proceso de acreditación.\n\n';
+  if(port.Experiencia) s += 'La experiencia... ' + narrarEnFrases(port.Experiencia) + '\n\n';
+  if(port.Reflexion) s += 'La reflexión... ' + narrarEnFrases(port.Reflexion) + '\n\n';
+  if(port.Evidencias) s += 'Las evidencias... ' + narrarEnFrases(port.Evidencias) + '\n\n';
+  if(port.Organizacion) s += 'Y la organización... ' + narrarEnFrases(port.Organizacion) + '\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- El portafolio es el documento rector.\n- Cuatro columnas lo sostienen: experiencia, reflexión, evidencias y organización.\n- No es solo guardar papeles: es organizar la experiencia.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Mi portafolio es mi bóveda."\n';
+  s += '2. "Organizar la experiencia es también honrarla."\n';
+  s += '3. "El portafolio no archiva: acredita."\n\n';
+
+  s += '### Capítulo XIII. Fichas Académicas\n\n';
+  s += 'El proceso se sostiene también en lecturas. Cada ficha es una conversación con un autor o una autora.\n\n';
+  if(fichas.length){
+    fichas.forEach((f,i)=>{
+      if(!String(f.Titulo||'').trim()) return;
+      s += 'Ficha número ' + (i+1) + '. Libro... ' + (f.Titulo||'sin título') + '. ';
+      if(f.Autor) s += 'Autor o autora... ' + f.Autor + '. ';
+      if(f.Anio) s += 'Año... ' + f.Anio + '. ';
+      s += '\n\n';
+      if(f.IdeaPrincipal) s += 'La idea principal es esta... ' + narrarEnFrases(f.IdeaPrincipal) + '\n\n';
+      if(f.Citas) s += 'Y las citas textuales... ' + narrarEnFrases(f.Citas) + '\n\n';
+      if(f.Comentario) s += 'Mi comentario como investigador o investigadora... ' + narrarEnFrases(f.Comentario) + '\n\n';
+    });
+  } else s += 'Las fichas aún no han sido elaboradas.\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- Cada ficha es un diálogo con el pensamiento de otro u otra.\n- La lectura sostiene la escritura.\n- Las citas son anclas del pensamiento propio.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Leo, luego acredito."\n';
+  s += '2. "Cada ficha es un puente entre dos mentes."\n';
+  s += '3. "Leer con método es leer dos veces."\n\n';
+
+  s += '### Capítulo XIV. Hitos y Activos Declarados\n\n';
+  s += 'Estos son los depósitos. Cada hito es una conquista. Cada activo, una prueba de vida.\n\n';
+  if(hitos.length){
+    hitos.forEach((h,i)=>{
+      if(!String(h.Activo||'').trim()) return;
+      s += 'Depósito número ' + (i+1) + '. ' + h.Activo + '.\n\n';
+      if(h.Valor) s += 'Su valor... ' + h.Valor + '.\n\n';
+      if(h.Fecha) s += 'Su fecha... ' + fmtFecha(h.Fecha) + '.\n\n';
+      if(h.Comentario) s += narrarEnFrases(h.Comentario) + '\n\n';
+    });
+  } else s += 'Los hitos aún esperan ser declarados.\n\n';
+  s += '#### Elementos clave del capítulo\n\n';
+  s += '- Cada hito es un depósito.\n- El valor no se mide solo en años, sino en transformación.\n- La vida es la cuenta más antigua que tenemos.\n\n';
+  s += '##### Frases memorables\n\n';
+  s += '1. "Cada hito es una prueba de que he crecido."\n';
+  s += '2. "Mi vida es mi activo más valioso."\n';
+  s += '3. "Deposito memoria y retiro sabiduría."\n\n';
+
+  s += '## Epílogo. Estado Actual de la Cuenta\n\n';
+  s += 'Al cierre de esta Súmula, el estado de la cuenta es el siguiente.\n\n';
+  s += 'Activos de conocimiento... ' + activos + '.\n\n';
+  s += 'Ahorros de experiencia... ' + ahorros + '.\n\n';
+  s += 'Capital de competencias... ' + capital + '.\n\n';
+  s += 'Riqueza declarada... ' + pct + '.\n\n';
+  s += 'Esta no es una cifra. Es un reconocimiento.\n\n';
+  s += 'Es la prueba viva de que toda vida, mirada con rigor, es conocimiento.\n\n';
+
+  s += '## Cierre Institucional\n\n';
+  s += 'Esta Súmula Narrada fue emitida por SENTIPENSAR, el Banco de Saberes Vivos.\n\n';
+  s += 'Institución... ' + INSTITUCION.universidad + '.\n\n';
+  s += INSTITUCION.nucleo + '.\n\n';
+  s += INSTITUCION.comunidad + '.\n\n';
+  s += INSTITUCION.concejo + '.\n\n';
+  s += 'Titular... ' + nombre + '.\n\n';
+  s += 'Correo... ' + (u.email || '—') + '.\n\n';
+  s += 'Folio de emisión... SP-' + Date.now().toString(36).toUpperCase() + '.\n\n';
+  s += 'Fecha de emisión... ' + fmtFecha(new Date().toISOString()) + '.\n\n';
+  s += 'Lema institucional... Acredita tu vida. Invierte tu sapiencia.\n\n';
+  s += 'Fin de la Súmula Narrada.\n\n';
+  s += 'Gracias por escuchar.\n\n';
+  return s;
+}
+
+function verSumula(){
+  const cont = $('#retiroPreview');
+  const texto = construirSumula();
+  cont.innerHTML = '<pre class="tree" style="white-space:pre-wrap;font-family:Georgia,serif;font-size:.92rem;line-height:1.75">' + texto.replace(/</g,'&lt;') + '</pre>';
+  setStatus($('#retiroStatus'), '✔ Súmula narrada generada', 'ok');
+  $('#hintPreview').textContent = 'Súmula generada. Audiolibro en .txt: ábrelo con un lector de texto-a-voz que respete marcadores markdown.';
+}
+function descargarSumula(){
+  const texto = construirSumula();
+  const nombre = 'SENTIPENSAR_Sumula_' + (DB.usuario?.nombre || 'participante').replace(/\s+/g,'_') + '_' + hoyISO() + '.txt';
+  const blob = new Blob(['\uFEFF' + texto], { type:'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre; a.click();
+  URL.revokeObjectURL(url);
+  setStatus($('#retiroStatus'), '✔ Súmula descargada: ' + nombre, 'ok');
+  toast('Súmula narrada descargada.');
+}
+
+/* ÁRBOL DEL SABER */
+function estadoCampo(v){ return String(v||'').trim() ? '[✔]' : '[—]'; }
+function cuentaTexto(v){
+  const t = String(v||'').trim();
+  if(!t) return '[—]';
+  return '[✔ ' + t.length + ' car.]';
+}
+function construirTreeF(){
+  const u = DB.usuario || { nombre:'—', email:'—', fechaRegistro:new Date().toISOString() };
+  const nombre = u.nombre || 'Titular';
+  const activos = document.getElementById('bigActivos')?.textContent || '0';
+  const ahorros = document.getElementById('bigAhorros')?.textContent || '0';
+  const capital = document.getElementById('bigCapital')?.textContent || '0';
+  const pct = document.getElementById('sldTotal')?.textContent || '0%';
+  const respuestas = DB.data.Respuestas || [];
+  const nResp = (panel) => respuestas.filter(r => String(r.Panel) === String(panel) && String(r.Respuesta||'').trim()).length;
+  const dims = DB.data.Dimensiones || [];
+  const dimsActivas = dims.filter(d => d.Seleccionada === 'Sí' || String(d.Reflexion||'').trim()).length;
+  const fichas = DB.data.Fichas || [];
+  const fichasOk = fichas.filter(f => String(f.Titulo||'').trim()).length;
+  const hitos = DB.data.SaldosFormativos || [];
+  const hitosOk = hitos.filter(h => String(h.Activo||'').trim()).length;
+  const refs = DB.data.ConsejoAsesor || [];
+  const refsOk = refs.filter(r => r.Afinidad === 'Sí').length;
+
+  let t = '';
+  t += 'SENTIPENSAR · El Banco de Saberes Vivos\n';
+  t += 'Árbol del Saber · Estado del Portafolio (Tree /F)\n';
+  t += 'Titular: ' + nombre + '\n';
+  if(u.sede) t += 'Sede: ' + u.sede + '\n';
+  t += 'Rol: ' + (u.rol||'Participante') + '\n';
+  t += 'Folio: SP-' + Date.now().toString(36).toUpperCase() + '\n';
+  t += 'Fecha: ' + fmtFecha(new Date().toISOString()) + '\n';
+  t += '═══════════════════════════════════════════════════════════\n\n';
+  t += 'Portafolio de ' + nombre + '\n';
+  t += '├── I. IDENTIDAD DEL TITULAR\n';
+  t += '│   ├── Nombre completo             ' + estadoCampo(u.nombre) + '\n';
+  t += '│   ├── Correo electrónico          ' + estadoCampo(u.email) + '\n';
+  t += '│   ├── Datos personales            ' + cuentaTexto(val('Perfil','DatosPersonales')) + '\n';
+  t += '│   ├── Ocupación actual            ' + estadoCampo(val('Perfil','Ocupacion')) + '\n';
+  t += '│   ├── Intereses                   ' + estadoCampo(val('Perfil','Intereses')) + '\n';
+  t += '│   └── Metas formativas            ' + estadoCampo(val('Perfil','Metas')) + '\n';
+  t += '├── II. AUTOBIOGRAFÍA ANDRAGÓGICA\n';
+  t += '│   ├── Tipo de biografía           ' + estadoCampo(val('Autobiografia','TipoBiografia')) + '\n';
+  t += '│   ├── Título                      ' + estadoCampo(val('Autobiografia','Titulo')) + '\n';
+  t += '│   └── Relato                      ' + cuentaTexto(val('Autobiografia','Relato')) + '\n';
+  t += '├── III. AUTO-ORIENTACIÓN\n';
+  const niveles = ['Personal-familiar','Comunitario','Local','Nacional','Mundial'].filter(n => respuestas.find(r=>r.Pregunta==='Nivel: '+n && String(r.Respuesta||'').trim())).length;
+  t += '│   └── Niveles de conciencia       [' + niveles + '/5]\n';
+  t += '├── IV. MÉTODOS DE DECONSTRUCCIÓN\n';
+  t += '│   └── Características             ' + (respuestas.filter(r=>r.Pregunta==='Método · Característica' && String(r.Respuesta||'').trim()).length ? '✔' : '—') + '\n';
+  t += '├── V. FONDOS DE INVERSIÓN REFLEXIVA\n';
+  t += '│   └── Dimensiones activas         [' + dimsActivas + '/' + dims.length + ']\n';
+  t += '├── VI. REVISIÓN Y BALANCE\n';
+  t += '│   └── Campos registrados          [' + nResp(5) + ']\n';
+  t += '├── VII. ENFOQUE SENTIPENSANTE\n';
+  const senti = DB.data.Sentipensante && DB.data.Sentipensante[0] ? DB.data.Sentipensante[0] : {};
+  const sentiCampos = ['Inteligencia','Recuerdo','Memoria','Emocion','Voluntad','Sentir','Afectividad','Reflexion'];
+  const sentiOk = sentiCampos.filter(k => senti[k] && String(senti[k]).trim()).length;
+  t += '│   └── Dimensiones activas         [' + sentiOk + '/8]\n';
+  t += '├── VIII. CONTEXTO DE ACTUACIÓN\n';
+  t += '│   ├── Coordenadas                 ' + estadoCampo(val('Actuacion','Coordenadas')) + '\n';
+  t += '│   ├── Instituciones               ' + estadoCampo(val('Actuacion','Instituciones')) + '\n';
+  t += '│   ├── Actores clave               ' + estadoCampo(val('Actuacion','ActoresClave')) + '\n';
+  t += '│   └── Entorno                     ' + estadoCampo(val('Actuacion','Entorno')) + '\n';
+  t += '├── IX. AUDITORÍA FDPO / DOFA\n';
+  const fdpo = DB.data.FDPO && DB.data.FDPO[0] ? DB.data.FDPO[0] : {};
+  const dofa = DB.data.DOFA && DB.data.DOFA[0] ? DB.data.DOFA[0] : {};
+  const fdpoOk = ['Fuente','Desarrollo','Planimetria','Objetivo'].filter(k => fdpo[k] && String(fdpo[k]).trim()).length;
+  const dofaOk = ['Fortalezas','Oportunidades','Debilidades','Amenazas','Estrategias','DecisionesFuturas'].filter(k => dofa[k] && String(dofa[k]).trim()).length;
+  t += '│   ├── FDPO                        [' + fdpoOk + '/4]\n';
+  t += '│   └── DOFA                        [' + dofaOk + '/6]\n';
+  t += '├── X. LÍNEA DE INVESTIGACIÓN\n';
+  t += '│   ├── Línea                       ' + estadoCampo(val('LineasInvestigacion','Linea')) + '\n';
+  t += '│   ├── Título al que aspira        ' + estadoCampo(val('LineasInvestigacion','Titulo')) + '\n';
+  t += '│   └── Vinculación                 ' + estadoCampo(val('LineasInvestigacion','Vinculacion')) + '\n';
+  t += '├── XI. ACTO DE EMPALABRAMIENTO\n';
+  t += '│   └── Manifiesto                  ' + cuentaTexto(respuestas.find(r=>r.Pregunta==='Empoderar · Manifiesto')?.Respuesta) + '\n';
+  t += '├── XII. BÓVEDA DEL PORTAFOLIO\n';
+  const port = DB.data.Portafolio && DB.data.Portafolio[0] ? DB.data.Portafolio[0] : {};
+  t += '│   ├── Experiencia                 ' + estadoCampo(port.Experiencia) + '\n';
+  t += '│   ├── Reflexión                   ' + estadoCampo(port.Reflexion) + '\n';
+  t += '│   ├── Evidencias                  ' + estadoCampo(port.Evidencias) + '\n';
+  t += '│   └── Organización                ' + estadoCampo(port.Organizacion) + '\n';
+  t += '├── XIII. FICHAS ACADÉMICAS\n';
+  t += '│   └── Fichas completadas          [' + fichasOk + ']\n';
+  t += '├── XIV. HITOS Y ACTIVOS\n';
+  t += '│   └── Depósitos declarados        [' + hitosOk + ']\n';
+  t += '└── BALANCE FINAL\n';
+  t += '    ├── Activos de Conocimiento     ' + activos + '\n';
+  t += '    ├── Ahorros de Experiencia      ' + ahorros + '\n';
+  t += '    ├── Capital de Competencias     ' + capital + '\n';
+  t += '    ├── Riqueza declarada           ' + pct + '\n';
+  t += '    ├── Referentes con afinidad     [' + refsOk + '/20]\n';
+  t += '    └── Fichas académicas           [' + fichasOk + ']\n';
+  t += '\n═══════════════════════════════════════════════════════════\n';
+  t += 'RESUMEN ESTADÍSTICO\n';
+  t += '───────────────────────────────────────────────────────────\n';
+  const capCount = [
+    val('Perfil','DatosPersonales') ? 1 : 0, val('Autobiografia','Relato') ? 1 : 0,
+    nResp(2) > 0 ? 1 : 0, nResp(3) > 0 ? 1 : 0, dimsActivas > 0 ? 1 : 0,
+    nResp(5) > 0 ? 1 : 0, sentiOk > 0 ? 1 : 0,
+    (val('Actuacion','Coordenadas') || val('Actuacion','Instituciones') || val('Actuacion','ActoresClave') || val('Actuacion','Entorno')) ? 1 : 0,
+    fdpoOk > 0 ? 1 : 0, (val('LineasInvestigacion','Linea') || val('LineasInvestigacion','Titulo')) ? 1 : 0,
+    respuestas.find(r=>r.Pregunta==='Empoderar · Manifiesto' && String(r.Respuesta||'').trim()) ? 1 : 0,
+    (port.Experiencia || port.Reflexion) ? 1 : 0, fichasOk > 0 ? 1 : 0, hitosOk > 0 ? 1 : 0
+  ].reduce((a,b)=>a+b,0);
+  t += 'Capítulos con contenido:      ' + capCount + ' / 14\n';
+  t += 'Activos de Conocimiento:      ' + activos + '\n';
+  t += 'Ahorros de Experiencia:       ' + ahorros + '\n';
+  t += 'Capital de Competencias:      ' + capital + '\n';
+  t += 'Riqueza declarada:            ' + pct + '\n';
+  t += 'Fichas académicas:            ' + fichasOk + '\n';
+  t += 'Referentes con afinidad:      ' + refsOk + ' / 20\n';
+  t += 'Folio del portafolio:         SP-' + Date.now().toString(36).toUpperCase() + '\n';
+  t += '───────────────────────────────────────────────────────────\n';
+  t += INSTITUCION.universidad + '\n';
+  t += INSTITUCION.nucleo + '\n';
+  t += INSTITUCION.comunidad + '\n';
+  t += '═══════════════════════════════════════════════════════════\n';
+  return t;
+}
+function verTreeF(){
+  const cont = $('#retiroPreview');
+  const texto = construirTreeF();
+  cont.innerHTML = '<pre class="tree">' + texto.replace(/</g,'&lt;') + '</pre>';
+  setStatus($('#retiroStatus'), '✔ Árbol del Saber generado', 'ok');
+  $('#hintPreview').textContent = 'Árbol del Saber generado. Vista jerárquica del portafolio.';
+}
+function descargarTreeF(){
+  const texto = construirTreeF();
+  const nombre = 'SENTIPENSAR_Tree_F_' + (DB.usuario?.nombre || 'participante').replace(/\s+/g,'_') + '_' + hoyISO() + '.txt';
+  const blob = new Blob(['\uFEFF' + texto], { type:'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre; a.click();
+  URL.revokeObjectURL(url);
+  setStatus($('#retiroStatus'), '✔ Árbol descargado: ' + nombre, 'ok');
+  toast('Árbol del Saber descargado.');
+}
+
+function togglePistaSumula(e){
+  if(e){ e.stopPropagation(); e.preventDefault(); }
+  const nota = $('#notaSumula');
+  const btn = $('#btnPistaSumula');
+  if(!nota || !btn) return;
+  const abierta = nota.classList.toggle('abierta');
+  btn.classList.toggle('abierta', abierta);
+}
+
+function initRetiro(){
+  const b1 = $('#btnEstadoCuenta');
+  const b2 = $('#btnImprimir');
+  const b3 = $('#btnDescargarTXT');
+  const b4 = $('#btnDescargarJSON');
+  const b5 = $('#btnCertificado');
+  const b6 = $('#btnActualizarPreview');
+  const b7 = $('#btnSumula');
+  const b8 = $('#btnTreeF');
+  const bPista = $('#btnPistaSumula');
+  if(b1) b1.addEventListener('click', verEstadoCuenta);
+  if(b2) b2.addEventListener('click', ()=>{ verEstadoCuenta(); setTimeout(imprimirEstadoCuenta, 150); });
+  if(b3) b3.addEventListener('click', descargarTXT);
+  if(b4) b4.addEventListener('click', descargarJSON);
+  if(b5) b5.addEventListener('click', generarCertificado);
+  if(b6) b6.addEventListener('click', verEstadoCuenta);
+  if(b7){
+    b7.addEventListener('click', (e)=>{
+      if(e.target.closest('.pista-sumula')) return;
+      verSumula();
+    });
+    b7.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); verSumula(); }
+    });
+  }
+  if(b8) b8.addEventListener('click', verTreeF);
+  if(bPista) bPista.addEventListener('click', togglePistaSumula);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INICIALIZACIÓN
+   ═══════════════════════════════════════════════════════════════════ */
+function init(){
+  initTheme();
+  cargarDB();
+
+  renderTiposBiografia();
+  renderInspiracionales();
+  renderReferentes();
+  renderSaldosItems();
+  renderFichasItems();
+  initRetiro();
+  initGobernanza();
+  initModoToggle();
+
+  /* La URL del Web App siempre viene pre-cargada */
+  if(!DB.apiUrl) DB.apiUrl = DEFAULT_API_URL;
+  const apiInput = $('#apiUrl');
+  if(apiInput) apiInput.value = DB.apiUrl;
+  persistir();
+
+  const btnAbrir = $('#btnAbrirCuenta');
+  if(btnAbrir) btnAbrir.addEventListener('click', abrirCuenta);
+  const btnEntrar = $('#btnEntrarCuenta');
+  if(btnEntrar) btnEntrar.addEventListener('click', entrarConCorreo);
+
+  const regEmail = $('#regEmail');
+  if(regEmail) regEmail.addEventListener('keydown', e=>{ if(e.key === 'Enter') abrirCuenta(); });
+  const regNombre = $('#regNombre');
+  if(regNombre) regNombre.addEventListener('keydown', e=>{ if(e.key === 'Enter') $('#regEmail').focus(); });
+
+  const btnSalir = $('#btnSalir');
+  if(btnSalir) btnSalir.addEventListener('click', salir);
+
+  const btnGuardarApi = $('#btnGuardarApi');
+  if(btnGuardarApi) btnGuardarApi.addEventListener('click', ()=>{
+    DB.apiUrl = $('#apiUrl').value.trim() || DEFAULT_API_URL;
+    persistir();
+    setStatus($('#apiStatus'), DB.apiUrl ? '✔ Conexión guardada' : 'Modo local activo', 'ok');
+    toast(DB.apiUrl ? 'Conexión configurada.' : 'Trabajarás en modo local.');
+  });
+  const btnProbarApi = $('#btnProbarApi');
+  if(btnProbarApi) btnProbarApi.addEventListener('click', async ()=>{
+    const url = $('#apiUrl').value.trim() || DEFAULT_API_URL;
+    DB.apiUrl = url; persistir();
+    setStatus($('#apiStatus'), 'Probando…');
+    const r = await API.get({ action:'ping' });
+    if(r && r.ok) setStatus($('#apiStatus'), '✔ Conexión exitosa con Google Sheets', 'ok');
+    else setStatus($('#apiStatus'), '✖ ' + (r && r.error ? r.error : 'Sin respuesta'), 'err');
+  });
+
+  $$('#nav button').forEach(b=>{
+    b.addEventListener('click', ()=> irA(b.dataset.go));
+  });
+  $$('[data-save]').forEach(btn=>{
+    btn.addEventListener('click', ()=> guardarPanel(btn.dataset.save, btn));
+  });
+
+  document.addEventListener('click', e=>{
+    const chip = e.target.closest('.chip');
+    if(chip){ chip.classList.toggle('on'); marcarCambio(); }
+  });
+  document.addEventListener('change', e=>{
+    const radio = e.target;
+    if(radio.type === 'radio' && radio.closest('.opciones')){
+      $$('.opcion', radio.closest('.opciones')).forEach(o=>o.classList.remove('on'));
+      radio.closest('.opcion').classList.add('on');
+    }
+    marcarCambio();
+  });
+  document.addEventListener('input', e=>{
+    if(e.target.matches('input, textarea, select')) marcarCambio();
+  });
+
+  const btnNP = $('#btnNuevaPregunta');
+  if(btnNP) btnNP.addEventListener('click', agregarPregunta);
+  const btnAS = $('#btnAddSaldo');
+  if(btnAS) btnAS.addEventListener('click', ()=>{
+    $('#repSaldos').appendChild(crearItemSaldo({ Fecha: hoyISO() }));
+    marcarCambio();
+  });
+  const btnAF = $('#btnAddFicha');
+  if(btnAF) btnAF.addEventListener('click', ()=>{
+    $('#repFichas').appendChild(crearItemFicha({}));
+    marcarCambio();
+  });
+
+  if(DB.usuario){
+    if(DB.usuario.autorizado) entrarAlDashboard();
+    else mostrarSalaDeEspera();
+  } else {
+    $('#vistaApertura').hidden = false;
+  }
+
+  if(DB.usuario && API.url()){
+    API.post({ action:'leer', idUsuario: DB.usuario.id }).then(r=>{
+      if(r && r.ok && r.data){
+        DB.data = r.data;
+        persistir();
+        hydrateAll();
+        renderSaldosItems();
+        renderFichasItems();
+      }
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
